@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 
 from collections import defaultdict
 
@@ -19,7 +19,7 @@ def mine_rec(patt, mdb):
 
         for (i, stoppos) in mdb:
             seq = db[i]
-            for j in range(stoppos, len(seq)):
+            for j in xrange(stoppos, len(seq)):
                 l = occurs[seq[j]]
                 if len(l) == 0 or l[-1][0] != i:
                     l.append((i, j + 1))
@@ -35,6 +35,6 @@ def mine_rec(patt, mdb):
             results.append((newpatt, [i for (i, stoppos) in newmdb]))
             mine_rec(newpatt, newmdb)
 
-mine_rec([], [(i, 0) for i in range(len(db))])
+mine_rec([], [(i, 0) for i in xrange(len(db))])
 
 print(results)

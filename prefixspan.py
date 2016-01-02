@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import sys
 from collections import defaultdict
 
 db = [
@@ -11,28 +12,32 @@ db = [
 
 minsup = 2
 
+#  db = []
+#  with open(sys.argv[1]) as f:
+    #  for line in f:
+        #  db.append(line.rstrip().split(' '))
+
+#  minsup = int(sys.argv[2])
+
 results = []
 
 def mine_rec(patt, mdb):
-    def localOccurs(mdb):
-        occurs = defaultdict(list)
+    occurs = defaultdict(list)
 
-        for (i, stoppos) in mdb:
-            seq = db[i]
-            for j in range(stoppos, len(seq)):
-                l = occurs[seq[j]]
-                if len(l) == 0 or l[-1][0] != i:
-                    l.append((i, j + 1))
+    for (i, stoppos) in mdb:
+        seq = db[i]
+        for j in range(stoppos, len(seq)):
+            l = occurs[seq[j]]
+            if len(l) == 0 or l[-1][0] != i:
+                l.append((i, j + 1))
 
-        return occurs
-
-    for (c, newmdb) in localOccurs(mdb).items():
+    for (c, newmdb) in occurs.items():
         newsup = len(newmdb)
 
         if newsup >= minsup:
             newpatt = patt + [c]
 
-            results.append((newpatt, [i for (i, stoppos) in newmdb]))
+            results.append((newpatt, len(newmdb)))
             mine_rec(newpatt, newmdb)
 
 mine_rec([], [(i, 0) for i in range(len(db))])

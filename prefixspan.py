@@ -43,7 +43,11 @@ def topk_rec(patt, mdb):
             if len(l) == 0 or l[-1][0] != i:
                 l.append((i, j + 1))
 
-    for (c, newmdb) in sorted(occurs.iteritems(), key=(lambda (c, newmdb): len(newmdb)), reverse=True):
+    for (c, newmdb) in sorted(
+        occurs.iteritems(),
+        key=(lambda (c, newmdb): len(newmdb)),
+        reverse=True
+    ):
         if len(results) == k and len(newmdb) <= results[0][0]:
             break
 
@@ -52,26 +56,26 @@ def topk_rec(patt, mdb):
 if __name__ == "__main__":
     argv = docopt(__doc__)
 
-    # db = [
-        # [int(v) for v in line.rstrip().split(' ')]
-        # for line in sys.stdin
-    # ]
-
     db = [
-        [0, 1, 2, 3, 4],
-        [1, 1, 1, 3, 4],
-        [2, 1, 2, 2, 0],
-        [1, 1, 1, 2, 2],
+        [int(v) for v in line.rstrip().split(' ')]
+        for line in sys.stdin
     ]
+
+    # db = [
+        # [0, 1, 2, 3, 4],
+        # [1, 1, 1, 3, 4],
+        # [2, 1, 2, 2, 0],
+        # [1, 1, 1, 2, 2],
+    # ]
 
     if argv["frequent"]:
         minsup = int(argv["<threshold>"])
-        f = frequent_rec
+        func = frequent_rec
     elif argv["top-k"]:
         k = int(argv["<threshold>"])
-        f = topk_rec
+        func = topk_rec
 
-    f([], [(i, 0) for i in xrange(len(db))])
+    func([], [(i, 0) for i in xrange(len(db))])
 
     if argv["top-k"]:
         results.sort(key=(lambda (freq, patt): (-freq, patt)))

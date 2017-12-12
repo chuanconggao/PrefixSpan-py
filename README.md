@@ -1,7 +1,11 @@
 The shortest yet efficient PrefixSpan implementation in Python, in only 12 lines in core part.
 
 # Usage
-Just replace the variable `db` with your own sequences, and variable `minsup` with your own minimum support threshold.
+```
+prefixspan.py (frequent | top-k) <threshold>
+```
+
+In default, sequences are read from standard input and stored in the `db` variable. You can easily change the `db` variable for your own case.
 
 # Features
 Based on state-of-the-art [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) algorithm.

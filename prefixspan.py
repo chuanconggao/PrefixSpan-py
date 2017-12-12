@@ -30,6 +30,7 @@ def frequent_rec(patt, mdb):
         if len(newmdb) >= minsup:
             frequent_rec(patt + [c], newmdb)
 
+
 def topk_rec(patt, mdb):
     heappush(results, (len(mdb), patt))
     if len(results) > k:
@@ -44,23 +45,32 @@ def topk_rec(patt, mdb):
                 l.append((i, j + 1))
 
     for (c, newmdb) in sorted(
-        occurs.iteritems(),
-        key=(lambda (c, newmdb): len(newmdb)),
-        reverse=True
-    ):
+            occurs.iteritems(),
+            key=(lambda (c, newmdb): len(newmdb)),
+            reverse=True
+        ):
         if len(results) == k and len(newmdb) <= results[0][0]:
             break
 
         topk_rec(patt + [c], newmdb)
 
+
 if __name__ == "__main__":
+    def checkThreshold(cond):
+        threshold = int(argv["<threshold>"])
+        if cond(threshold):
+            return threshold
+
+        print("ERROR: <threshold> is not in correct range.", file=sys.stderr)
+        sys.exit(1)
+
+
     argv = docopt(__doc__)
 
     db = [
         [int(v) for v in line.rstrip().split(' ')]
         for line in sys.stdin
     ]
-
     # db = [
         # [0, 1, 2, 3, 4],
         # [1, 1, 1, 3, 4],
@@ -69,10 +79,10 @@ if __name__ == "__main__":
     # ]
 
     if argv["frequent"]:
-        minsup = int(argv["<threshold>"])
+        minsup = checkThreshold(lambda v: 0 < v <= len(db))
         func = frequent_rec
     elif argv["top-k"]:
-        k = int(argv["<threshold>"])
+        k = checkThreshold(lambda v: 0 < v)
         func = topk_rec
 
     func([], [(i, 0) for i in xrange(len(db))])

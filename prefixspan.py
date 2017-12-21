@@ -101,4 +101,4 @@ if __name__ == "__main__":
     if argv["top-k"]:
         results.sort(key=(lambda (freq, patt): (-freq, patt)))
     for (freq, patt) in results:
-        print("{}: {}".format(patt, freq))
+        print("{} : {}".format(' '.join(str(v) for v in patt), freq))

@@ -1,11 +1,11 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 Usage:
     prefixspan.py (frequent | top-k) <threshold> [<file>] [--minlen=1] [--maxlen=maxint]
 """
 
-from __future__ import print_function
+# from typing import * # Uncomment for static type checking
 
 import sys
 from collections import defaultdict
@@ -13,57 +13,65 @@ from heapq import heappop, heappush
 
 from docopt import docopt
 
-__minlen, __maxlen = 1, sys.maxint
+__minlen, __maxlen = 1, sys.maxsize
 
 results = []
 
-def __scan(patt, mdb):
-    occurs = defaultdict(list)
-    for (i, startpos) in mdb:
+def __scan(matches):
+    # type: (List[Tuple[int, int]]) -> DefaultDict[int, List[Tuple[int, int]]]
+    alloccurs = defaultdict(list) # type: DefaultDict[int, List[Tuple[int, int]]]
+
+    for (i, pos) in matches:
         seq = db[i]
-        for j in xrange(startpos, len(seq)):
-            l = occurs[seq[j]]
-            if len(l) == 0 or l[-1][0] != i:
-                l.append((i, j + 1))
 
-    return occurs
+        occurs = {} # type: Dict[int, int]
+        for j in range(pos, len(seq)): # Use xrange in Python 2
+            occurs.setdefault(seq[j], j + 1)
+
+        for k, newpos in occurs.items(): # Use .iteritems() in Python 2
+            alloccurs[k].append((i, newpos))
+
+    return alloccurs
 
 
-def frequent_rec(patt, mdb):
+def frequent_rec(patt, matches):
+    # type: (List[int], List[Tuple[int, int]]) -> None
     if len(patt) >= __minlen:
-        results.append((len(mdb), patt))
+        results.append((len(matches), patt))
 
         if len(patt) == __maxlen:
             return
 
-    for (c, newmdb) in __scan(patt, mdb).iteritems():
-        if len(newmdb) >= minsup:
-            frequent_rec(patt + [c], newmdb)
+    for (c, newmatches) in __scan(matches).items(): # Use .iteritems() in Python 2
+        if len(newmatches) >= minsup:
+            frequent_rec(patt + [c], newmatches)
 
 
-def topk_rec(patt, mdb):
+def topk_rec(patt, matches):
+    # type: (List[int], List[Tuple[int, int]]) -> None
     if len(patt) >= __minlen:
-        heappush(results, (len(mdb), patt))
+        heappush(results, (len(matches), patt))
         if len(results) > k:
             heappop(results)
 
         if len(patt) == __maxlen:
             return
 
-    for (c, newmdb) in sorted(
-            __scan(patt, mdb).iteritems(),
-            key=(lambda (c, newmdb): len(newmdb)),
+    for (c, newmatches) in sorted(
+            __scan(matches).items(), # Use .iteritems() in Python 2
+            key=(lambda x: len(x[1])),
             reverse=True
         ):
         newpatt = patt + [c]
-        if len(results) == k and (len(newmdb), newpatt) <= results[0]:
+        if len(results) == k and (len(newmatches), newpatt) <= results[0]:
             break
 
-        topk_rec(newpatt, newmdb)
+        topk_rec(newpatt, newmatches)
 
 
 if __name__ == "__main__":
     def checkArg(arg, cond):
+        # type: (str, Callable[[int], bool]) -> int
         threshold = int(argv[arg])
         if cond(threshold):
             return threshold
@@ -71,34 +79,29 @@ if __name__ == "__main__":
         print("ERROR: {} is not in correct range.".format(arg), file=sys.stderr)
         sys.exit(1)
 
+
     argv = docopt(__doc__)
 
     db = [
         [int(v) for v in line.rstrip().split(' ')]
         for line in (open(argv["<file>"]) if argv["<file>"] else sys.stdin)
     ]
-    # db = [
-        # [0, 1, 2, 3, 4],
-        # [1, 1, 1, 3, 4],
-        # [2, 1, 2, 2, 0],
-        # [1, 1, 1, 2, 2],
-    # ]
 
     if argv["frequent"]:
         minsup = checkArg("<threshold>", lambda v: 0 < v <= len(db))
         func = frequent_rec
     elif argv["top-k"]:
-        k = checkArg("<threshold>", lambda v: 0 < v)
+        k = checkArg("<threshold>", lambda v: v > 0)
         func = topk_rec
 
     if argv["--minlen"]:
-        __minlen = checkArg("--minlen", lambda v: 0 < v)
+        __minlen = checkArg("--minlen", lambda v: v > 0)
     if argv["--maxlen"]:
-        __maxlen = checkArg("--maxlen", lambda v: __minlen <= v)
+        __maxlen = checkArg("--maxlen", lambda v: v >= __minlen)
 
-    func([], [(i, 0) for i in xrange(len(db))])
+    func([], [(i, 0) for i in range(len(db))]) # Use xrange in Python 2
 
     if argv["top-k"]:
-        results.sort(key=(lambda (freq, patt): (-freq, patt)))
+        results.sort(key=(lambda x: -x[0]))
     for (freq, patt) in results:
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

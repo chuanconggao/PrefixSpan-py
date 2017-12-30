@@ -1,15 +1,25 @@
-The shortest yet efficient PrefixSpan implementation in Python, in only 12 lines in core part.
+The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part.
 
 # Usage
 ```
-prefixspan.py (frequent | top-k) <threshold>
+prefixspan.py (frequent | top-k) <threshold> [<file>] [--minlen=1] [--maxlen=maxint]
 ```
 
-In default, sequences are read from standard input and stored in the `db` variable. You can easily change the `db` variable for your own case.
+  * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
+```
+0 1 2 3 4
+1 1 1 3 4
+2 1 2 2 0
+1 1 1 2 2
+```
+
+  * The patterns and their respective frequencies are printed to standard output.
 
 # Features
-Based on state-of-the-art [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) algorithm.
-Mining top-k patterns is also supported.
+Outputs traditional single-item sequential patterns, where gaps are allowed between items.
+
+  * Mining top-k patterns is also supported, with respective optimizations.
+  * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Tip
-I strongly encourage using PyPy instead of CPython to run the script for best performance. In my own experience, it is 9x times faster in average.
+I strongly encourage using PyPy instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average.

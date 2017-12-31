@@ -5,7 +5,11 @@ Usage:
     prefixspan.py (frequent | top-k) <threshold> [<file>] [--minlen=1] [--maxlen=maxint]
 """
 
-# from typing import * # Uncomment for static type checking
+# Uncomment for static type checking
+# from typing import *
+# Matches = List[Tuple[int, int]]
+# Pattern = List[int]
+# Results = List[Tuple[int, Pattern]]
 
 import sys
 from collections import defaultdict
@@ -15,11 +19,11 @@ from docopt import docopt
 
 __minlen, __maxlen = 1, sys.maxsize
 
-results = []
+results = [] # type: Results
 
 def __scan(matches):
-    # type: (List[Tuple[int, int]]) -> DefaultDict[int, List[Tuple[int, int]]]
-    alloccurs = defaultdict(list) # type: DefaultDict[int, List[Tuple[int, int]]]
+    # type: (Matches) -> DefaultDict[int, Matches]
+    alloccurs = defaultdict(list) # type: DefaultDict[int, Matches]
 
     for (i, pos) in matches:
         seq = db[i]
@@ -35,7 +39,7 @@ def __scan(matches):
 
 
 def frequent_rec(patt, matches):
-    # type: (List[int], List[Tuple[int, int]]) -> None
+    # type: (Pattern, Matches) -> None
     if len(patt) >= __minlen:
         results.append((len(matches), patt))
 
@@ -48,7 +52,7 @@ def frequent_rec(patt, matches):
 
 
 def topk_rec(patt, matches):
-    # type: (List[int], List[Tuple[int, int]]) -> None
+    # type: (Pattern, Matches) -> None
     if len(patt) >= __minlen:
         heappush(results, (len(matches), patt))
         if len(results) > k:

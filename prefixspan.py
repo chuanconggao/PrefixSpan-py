@@ -66,11 +66,10 @@ def topk_rec(patt, matches):
             key=(lambda x: len(x[1])),
             reverse=True
         ):
-        newpatt = patt + [c]
-        if len(results) == k and (len(newmatches), newpatt) <= results[0]:
+        if len(results) == k and len(newmatches) <= results[0][0]:
             break
 
-        topk_rec(newpatt, newmatches)
+        topk_rec(patt + [c], newmatches)
 
 
 if __name__ == "__main__":

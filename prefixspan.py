@@ -2,7 +2,7 @@
 
 """
 Usage:
-    prefixspan.py (frequent | top-k) <threshold> [<file>] [--minlen=1] [--maxlen=maxint]
+    prefixspan.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 """
 
 # Uncomment for static type checking

@@ -1,8 +1,8 @@
-The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part.
+The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
 
 # Usage
 ```
-prefixspan.py (frequent | top-k) <threshold> [<file>] [--minlen=1] [--maxlen=maxint]
+prefixspan.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 ```
 
   * Sequences are read from standard input. Each sequence is integers separated by space, like this example:

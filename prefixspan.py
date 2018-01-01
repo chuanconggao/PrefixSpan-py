@@ -28,12 +28,12 @@ def __scan(matches):
     for (i, pos) in matches:
         seq = db[i]
 
-        occurs = {} # type: Dict[int, int]
+        occurs = set() # type: Set[int]
         for j in range(pos, len(seq)): # Use xrange in Python 2
-            occurs.setdefault(seq[j], j + 1)
-
-        for k, newpos in occurs.items(): # Use .iteritems() in Python 2
-            alloccurs[k].append((i, newpos))
+            k = seq[j]
+            if k not in occurs:
+                occurs.add(k)
+                alloccurs[k].append((i, j + 1))
 
     return alloccurs
 

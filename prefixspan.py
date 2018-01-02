@@ -29,7 +29,7 @@ def __scan(matches):
         seq = db[i]
 
         occurs = set() # type: Set[int]
-        for j in range(pos, len(seq)): # Use xrange in Python 2
+        for j in range(pos, len(seq)):
             k = seq[j]
             if k not in occurs:
                 occurs.add(k)
@@ -46,7 +46,7 @@ def frequent_rec(patt, matches):
         if len(patt) == __maxlen:
             return
 
-    for (c, newmatches) in __scan(matches).items(): # Use .iteritems() in Python 2
+    for (c, newmatches) in __scan(matches).items():
         if len(newmatches) >= minsup:
             frequent_rec(patt + [c], newmatches)
 
@@ -62,7 +62,7 @@ def topk_rec(patt, matches):
             return
 
     for (c, newmatches) in sorted(
-            __scan(matches).items(), # Use .iteritems() in Python 2
+            __scan(matches).items(),
             key=(lambda x: len(x[1])),
             reverse=True
         ):
@@ -75,12 +75,16 @@ def topk_rec(patt, matches):
 if __name__ == "__main__":
     def checkArg(arg, cond):
         # type: (str, Callable[[int], bool]) -> int
-        threshold = int(argv[arg])
-        if cond(threshold):
-            return threshold
+        try:
+            threshold = int(argv[arg])
+            if not cond(threshold):
+                raise ValueError
+        except ValueError:
+            print("ERROR: Cannot parse {}.".format(arg), file=sys.stderr)
+            print(__doc__, file=sys.stderr)
+            sys.exit(1)
 
-        print("ERROR: {} is not in correct range.".format(arg), file=sys.stderr)
-        sys.exit(1)
+        return threshold
 
 
     argv = docopt(__doc__)
@@ -102,7 +106,7 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         __maxlen = checkArg("--maxlen", lambda v: v >= __minlen)
 
-    func([], [(i, 0) for i in range(len(db))]) # Use xrange in Python 2
+    func([], [(i, 0) for i in range(len(db))])
 
     if argv["top-k"]:
         results.sort(key=(lambda x: -x[0]))

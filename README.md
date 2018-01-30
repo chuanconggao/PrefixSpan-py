@@ -1,4 +1,10 @@
+[![PyPI version](https://badge.fury.io/py/prefixspan.svg)](https://badge.fury.io/py/prefixspan)
+
 The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
+
+# Installation
+
+This package is available on PyPi. Just use `pip3 install -U prefixspan` to install it.
 
 # CLI Usage
 You can simply use the algorithm on terminal.

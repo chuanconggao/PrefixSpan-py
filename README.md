@@ -3,7 +3,7 @@ The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~
 # CLI Usage
 You can simply use the algorithm on terminal.
 ```
-prefixspan-cli.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 ```
 
   * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -19,7 +19,7 @@ prefixspan-cli.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] 
 # API Usage
 Alternatively, you can use the algorithm via API.
 ``` python
-from prefixspan import PrefixSpan
+from prefixspan.api import PrefixSpan
 
 db = [
     [0, 1, 2, 3, 4],

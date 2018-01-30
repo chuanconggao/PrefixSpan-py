@@ -2,14 +2,14 @@
 
 """
 Usage:
-    prefixspan-cli.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+    prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 """
 
 import sys
 
 from docopt import docopt
 
-from prefixspan import PrefixSpan
+from prefixspan.api import PrefixSpan
 
 def checkArg(arg, cond):
     # type: (str, Callable[[int], bool]) -> int

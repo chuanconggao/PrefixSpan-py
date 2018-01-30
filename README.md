@@ -1,8 +1,9 @@
 The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
 
-# Usage
+# CLI Usage
+You can simply use the algorithm on terminal.
 ```
-prefixspan.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+prefixspan-cli.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 ```
 
   * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -14,6 +15,23 @@ prefixspan.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<fi
 ```
 
   * The patterns and their respective frequencies are printed to standard output.
+
+# API Usage
+Alternatively, you can use the algorithm via API.
+``` python
+from prefixspan import PrefixSpan
+
+db = [
+    [0, 1, 2, 3, 4],
+    [1, 1, 1, 3, 4],
+    [2, 1, 2, 2, 0],
+    [1, 1, 1, 2, 2],
+]
+
+ps = PrefixSpan(db)
+
+print(ps.topk(10))
+```
 
 # Features
 Outputs traditional single-item sequential patterns, where gaps are allowed between items.

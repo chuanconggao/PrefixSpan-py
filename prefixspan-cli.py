@@ -1,0 +1,56 @@
+#! /usr/bin/env python3
+
+"""
+Usage:
+    prefixspan-cli.py (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+"""
+
+import sys
+
+from docopt import docopt
+
+from prefixspan import PrefixSpan
+
+def checkArg(arg, cond):
+    # type: (str, Callable[[int], bool]) -> int
+    try:
+        val = int(argv[arg])
+        if not cond(val):
+            raise ValueError
+    except ValueError:
+        print("ERROR: Cannot parse {}.".format(arg), file=sys.stderr)
+        print(__doc__, file=sys.stderr)
+        sys.exit(1)
+
+    return val
+
+
+if __name__ == "__main__":
+    argv = docopt(__doc__)
+
+    db = [
+        [int(v) for v in line.rstrip().split(' ')]
+        for line in (open(argv["<file>"]) if argv["<file>"] else sys.stdin)
+    ]
+
+    ps = PrefixSpan(db)
+
+    if argv["frequent"]:
+        threshold = checkArg("<threshold>", lambda v: 0 < v <= len(db))
+        func = ps.frequent
+    elif argv["top-k"]:
+        threshold = checkArg("<threshold>", lambda v: v > 0)
+        func = ps.topk
+
+    if argv["--minlen"]:
+        ps.minlen = checkArg("--minlen", lambda v: v > 0)
+    if argv["--maxlen"]:
+        ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
+
+    results = func(threshold)
+
+    if argv["top-k"]:
+        results.sort(key=(lambda x: -x[0]))
+
+    for (freq, patt) in results:
+        print("{} : {}".format(' '.join(str(v) for v in patt), freq))

@@ -36,6 +36,7 @@ db = [
 
 ps = PrefixSpan(db)
 
+print(ps.frequent(2))
 print(ps.topk(10))
 ```
 

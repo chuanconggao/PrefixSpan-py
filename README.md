@@ -2,6 +2,8 @@
 
 The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
 
+It is very simple to use this package under Python 2. You only need to tweak 2-3 lines.
+
 # Installation
 
 This package is available on PyPi. Just use `pip3 install -U prefixspan` to install it.

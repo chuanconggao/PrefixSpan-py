@@ -1,6 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/prefixspan.svg)](https://badge.fury.io/py/prefixspan)
 
-The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 15 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
+The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 20 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
 
 It is very simple to use this package under Python 2. You only need to tweak 2-3 lines.
 
@@ -49,4 +49,4 @@ Outputs traditional single-item sequential patterns, where gaps are allowed betw
   * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Tip
-I strongly encourage using PyPy instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average.
+I strongly encourage using [PyPy](http://pypy.org/) instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average. To start, you can install this package in a [virtual environment](https://virtualenv.pypa.io/en/stable/) created for PyPy.

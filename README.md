@@ -1,6 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/prefixspan.svg)](https://badge.fury.io/py/prefixspan)
 
-The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, in less than 20 lines in core part. You can find the Scala version [here](https://github.com/chuanconggao/PrefixSpan-scala).
+The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, with less than 20 lines in core part (scan and extend). You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
 
 It is very simple to use this package under Python 2. You only need to tweak 2-3 lines.
 
@@ -9,7 +9,9 @@ It is very simple to use this package under Python 2. You only need to tweak 2-3
 This package is available on PyPi. Just use `pip3 install -U prefixspan` to install it.
 
 # CLI Usage
+
 You can simply use the algorithm on terminal.
+
 ```
 prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
 ```
@@ -25,9 +27,11 @@ prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<f
   * The patterns and their respective frequencies are printed to standard output.
 
 # API Usage
+
 Alternatively, you can use the algorithm via API.
+
 ``` python
-from prefixspan.api import PrefixSpan
+from prefixspan import PrefixSpan
 
 db = [
     [0, 1, 2, 3, 4],
@@ -43,10 +47,13 @@ print(ps.topk(10))
 ```
 
 # Features
+
 Outputs traditional single-item sequential patterns, where gaps are allowed between items.
 
-  * Mining top-k patterns is also supported, with respective optimizations.
+  * Mining top-k patterns is also supported, with respective optimizations on efficiency.
+  
   * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Tip
+
 I strongly encourage using [PyPy](http://pypy.org/) instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average. To start, you can install this package in a [virtual environment](https://virtualenv.pypa.io/en/stable/) created for PyPy.

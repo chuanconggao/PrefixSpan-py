@@ -1,8 +1,18 @@
-[![PyPI version](https://badge.fury.io/py/prefixspan.svg)](https://badge.fury.io/py/prefixspan)
+[![PyPi version](https://img.shields.io/pypi/v/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
+[![PyPi pyversions](https://img.shields.io/pypi/pyversions/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
+[![PyPi license](https://img.shields.io/pypi/l/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 
 The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, with less than 20 lines in core part (scan and extend). You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
 
 It is very simple to use this package under Python 2. You only need to tweak 2-3 lines.
+
+# Features
+
+Outputs traditional single-item sequential patterns, where gaps are allowed between items.
+
+- Mining top-k patterns is also supported, with respective optimizations on efficiency. Custom key function can also be applied.
+
+- You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Installation
 
@@ -59,12 +69,6 @@ Options:
 
 Alternatively, you can use the algorithm via API.
 
-- For top-k algorithm, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence IDs.
-    
-    - In default, `len(matches)` is used denoting the support of current pattern.
-
-    - Alternatively, as an example, `len(patt) if len(matches) >= threshold else 0` can be used to find the k longest frequent patterns.
-
 ``` python
 from prefixspan import PrefixSpan
 
@@ -99,22 +103,22 @@ print(ps.topk(5))
 #  (3, [1, 2]),
 #  (2, [1, 3]),
 #  (2, [1, 3, 4])]
+```
 
-ps.topk(5, key=lambda patt, matches: len(patt) if len(matches) >= 2 else 0)
+- For top-k algorithm, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence IDs.
+    
+    - In default, `len(matches)` is used denoting the support of current pattern.
+
+    - Alternatively, as an example, `len(patt) if len(matches) >= <threshold> else 0` can be used to find the k longest frequent patterns.
+
+```python
+print(ps.topk(5, key=lambda patt, matches: len(patt) if len(matches) >= 2 else 0))
 # [(3, [1, 2, 2]),
 #  (3, [1, 3, 4]),
 #  (2, [1, 2]),
 #  (2, [1, 3]),
 #  (2, [1, 4])]
 ```
-
-# Features
-
-Outputs traditional single-item sequential patterns, where gaps are allowed between items.
-
-    * Mining top-k patterns is also supported, with respective optimizations on efficiency.
-  
-    * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Tip
 

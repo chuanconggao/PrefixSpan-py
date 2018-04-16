@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 
-# Uncomment for static type checking
-# from typing import *
-# Matches = List[Tuple[int, int]]
-# Pattern = List[int]
-# Results = List[Tuple[int, Pattern]]
+from typing import *
+Matches = List[Tuple[int, int]]
+Pattern = List[int]
+Results = List[Tuple[int, Pattern]]
+Key = Callable[[Pattern, Matches], float]
 
 import sys
 from collections import defaultdict
@@ -12,13 +12,17 @@ from heapq import heappop, heappush
 
 class PrefixSpan(object):
     def __init__(self, db):
+        # type: (List[List[int]]) -> None
         self._db = db
 
         self.minlen, self.maxlen = 1, sys.maxsize
 
+        self._results = [] # type: Results
+
 
     def _mine(self, func):
-        self._results = [] # type: Results
+        # type: (Callable[[Pattern, Matches], None]) -> Results
+        self._results.clear()
 
         func([], [(i, 0) for i in range(len(self._db))])
 
@@ -26,10 +30,10 @@ class PrefixSpan(object):
 
 
     def _scan(self, matches):
-        # type: (Matches) -> DefaultDict[int, Matches]
-        alloccurs = defaultdict(list) # type: DefaultDict[int, Matches]
+        # type: (Matches) -> Dict[int, Matches]
+        alloccurs = defaultdict(list) # type: Dict[int, Matches]
 
-        for (i, pos) in matches:
+        for i, pos in matches:
             seq = self._db[i]
 
             occurs = set() # type: Set[int]
@@ -43,6 +47,8 @@ class PrefixSpan(object):
 
 
     def frequent(self, minsup):
+        # type: (int) -> Results
+
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
@@ -51,7 +57,7 @@ class PrefixSpan(object):
                 if len(patt) == self.maxlen:
                     return
 
-            for (c, newmatches) in self._scan(matches).items():
+            for c, newmatches in self._scan(matches).items():
                 if len(newmatches) >= minsup:
                     frequent_rec(patt + [c], newmatches)
 
@@ -59,26 +65,32 @@ class PrefixSpan(object):
         return self._mine(frequent_rec)
 
 
-    def topk(self, k):
+    def topk(self, k, key=None):
+        # type: (int, Union[None, Key]) -> Results
+
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                heappush(self._results, (len(matches), patt))
+                heappush(self._results, (key(patt, matches), patt))
                 if len(self._results) > k:
                     heappop(self._results)
 
                 if len(patt) == self.maxlen:
                     return
 
-            for (c, newmatches) in sorted(
+            for c, newmatches in sorted(
                     self._scan(matches).items(),
-                    key=(lambda x: len(x[1])),
+                    key=lambda x: key(patt + [x[0]], x[1]),
                     reverse=True
                 ):
-                if len(self._results) == k and len(newmatches) <= self._results[0][0]:
+                newpatt = patt + [c]
+                if len(self._results) == k and key(newpatt, newmatches) <= self._results[0][0]:
                     break
 
-                topk_rec(patt + [c], newmatches)
+                topk_rec(newpatt, newmatches)
 
 
-        return self._mine(topk_rec)
+        if key is None:
+            key = lambda patt, matches: len(matches)
+
+        return sorted(self._mine(topk_rec), key=lambda x: -x[0])

@@ -6,12 +6,12 @@ setup(
     name="prefixspan",
     packages=["prefixspan"],
     scripts=["prefixspan-cli"],
-    version="0.1.2",
+    version="0.2",
     description="PrefixSpan in Python 3",
     author="Chuancong Gao",
     author_email="chuancong@gmail.com",
     url="https://github.com/chuanconggao/PrefixSpan-py",
-    download_url="https://github.com/chuanconggao/PrefixSpan-py/tarball/0.1.2",
+    download_url="https://github.com/chuanconggao/PrefixSpan-py/tarball/0.2",
     keywords=[
         "data mining",
         "pattern mining"

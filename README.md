@@ -13,10 +13,22 @@ This package is available on PyPi. Just use `pip3 install -U prefixspan` to inst
 You can simply use the algorithm on terminal.
 
 ```
-prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+Usage:
+    prefixspan-cli (frequent | top-k) <threshold> [options] [<file>]
+
+    prefixspan-cli --help
+
+
+Options:
+    --minlen=<minlen>  Minimum length of patterns. [default: 1]
+    --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
+
+    --key=<key>        Custom key function for top-k algorithm. [default: ]
+                       Must be a Python lambda function in form of "lambda patt, matches: ...".
 ```
 
-  * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
+* Sequences are read from standard input. Each sequence is integers separated by space, like this example:
+
 ```
 0 1 2 3 4
 1 1 1 3 4
@@ -24,11 +36,34 @@ prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<f
 1 1 1 2 2
 ```
 
-  * The patterns and their respective frequencies are printed to standard output.
+* The patterns and their respective frequencies are printed to standard output.
+
+```
+0 : 2
+1 : 4
+1 2 : 3
+1 2 2 : 2
+1 3 : 2
+1 3 4 : 2
+1 4 : 2
+1 1 : 2
+1 1 1 : 2
+2 : 3
+2 2 : 2
+3 : 2
+3 4 : 2
+4 : 2
+```
 
 # API Usage
 
 Alternatively, you can use the algorithm via API.
+
+- For top-k algorithm, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence IDs.
+    
+    - In default, `len(matches)` is used denoting the support of current pattern.
+
+    - Alternatively, as an example, `len(patt) if len(matches) >= threshold else 0` can be used to find the k longest frequent patterns.
 
 ``` python
 from prefixspan import PrefixSpan
@@ -43,16 +78,43 @@ db = [
 ps = PrefixSpan(db)
 
 print(ps.frequent(2))
-print(ps.topk(10))
+# [(2, [0]),
+#  (4, [1]),
+#  (3, [1, 2]),
+#  (2, [1, 2, 2]),
+#  (2, [1, 3]),
+#  (2, [1, 3, 4]),
+#  (2, [1, 4]),
+#  (2, [1, 1]),
+#  (2, [1, 1, 1]),
+#  (3, [2]),
+#  (2, [2, 2]),
+#  (2, [3]),
+#  (2, [3, 4]),
+#  (2, [4])]
+
+print(ps.topk(5))
+# [(4, [1]),
+#  (3, [2]),
+#  (3, [1, 2]),
+#  (2, [1, 3]),
+#  (2, [1, 3, 4])]
+
+ps.topk(5, key=lambda patt, matches: len(patt) if len(matches) >= 2 else 0)
+# [(3, [1, 2, 2]),
+#  (3, [1, 3, 4]),
+#  (2, [1, 2]),
+#  (2, [1, 3]),
+#  (2, [1, 4])]
 ```
 
 # Features
 
 Outputs traditional single-item sequential patterns, where gaps are allowed between items.
 
-  * Mining top-k patterns is also supported, with respective optimizations on efficiency.
+    * Mining top-k patterns is also supported, with respective optimizations on efficiency.
   
-  * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
+    * You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
 # Tip
 

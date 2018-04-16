@@ -2,14 +2,27 @@
 
 """
 Usage:
-    prefixspan-cli (frequent | top-k) <threshold> [--minlen=1] [--maxlen=maxint] [<file>]
+    prefixspan-cli (frequent | top-k) <threshold> [options] [<file>]
+
+    prefixspan-cli --help
+
+
+Options:
+    --minlen=<minlen>  Minimum length of patterns. [default: 1]
+    --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
+
+    --key=<key>        Custom key function for top-k algorithm. [default: ]
+                       Must be a Python lambda function in form of "lambda patt, matches: ...".
 """
 
 import sys
+from functools import partial
 
 from docopt import docopt
 
 from prefixspan.api import PrefixSpan
+
+print2 = partial(print, file=sys.stderr)
 
 def checkArg(arg, cond):
     # type: (str, Callable[[int], bool]) -> int
@@ -18,8 +31,8 @@ def checkArg(arg, cond):
         if not cond(val):
             raise ValueError
     except ValueError:
-        print("ERROR: Cannot parse {}.".format(arg), file=sys.stderr)
-        print(__doc__, file=sys.stderr)
+        print2("ERROR: Cannot parse {}.".format(arg))
+        print2(__doc__)
         sys.exit(1)
 
     return val
@@ -47,10 +60,13 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
-    results = func(threshold)
+    if argv["--key"]:
+        try:
+            func = partial(ps.topk, key=eval(argv["--key"]))
+        except:
+            print2("ERROR: Cannot parse {}.".format("--key"))
+            print2(__doc__)
+            sys.exit(1)
 
-    if argv["top-k"]:
-        results.sort(key=(lambda x: -x[0]))
-
-    for (freq, patt) in results:
+    for freq, patt in func(threshold):
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

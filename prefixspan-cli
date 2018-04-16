@@ -11,8 +11,9 @@ Options:
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
 
-    --key=<key>        Custom key function for top-k algorithm. [default: ]
+    --key=<key>        Custom key function for both frequent and top-k algorithms. [default: ]
                        Must be a Python lambda function in form of "lambda patt, matches: ...".
+                       Returnss a boolean for frequent algorithm and a float for top-k algorithm.
 """
 
 import sys
@@ -60,13 +61,14 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
+    key = None
     if argv["--key"]:
         try:
-            func = partial(ps.topk, key=eval(argv["--key"]))
+            key = eval(argv["--key"])
         except:
             print2("ERROR: Cannot parse {}.".format("--key"))
             print2(__doc__)
             sys.exit(1)
 
-    for freq, patt in func(threshold):
+    for freq, patt in func(threshold, key=key):
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

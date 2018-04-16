@@ -4,7 +4,7 @@ from typing import *
 Matches = List[Tuple[int, int]]
 Pattern = List[int]
 Results = List[Tuple[int, Pattern]]
-Key = Callable[[Pattern, Matches], float]
+Key = Callable[[Pattern, Matches], Any]
 
 import sys
 from collections import defaultdict
@@ -46,13 +46,14 @@ class PrefixSpan(object):
         return alloccurs
 
 
-    def frequent(self, minsup):
-        # type: (int) -> Results
+    def frequent(self, minsup, key=None):
+        # type: (int, Union[None, Key]) -> Results
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                self._results.append((len(matches), patt))
+                if key(patt, matches):
+                    self._results.append((len(matches), patt))
 
                 if len(patt) == self.maxlen:
                     return
@@ -61,6 +62,8 @@ class PrefixSpan(object):
                 if len(newmatches) >= minsup:
                     frequent_rec(patt + [c], newmatches)
 
+        if key is None:
+            key = lambda patt, matches: True
 
         return self._mine(frequent_rec)
 

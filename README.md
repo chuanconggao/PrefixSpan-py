@@ -33,8 +33,9 @@ Options:
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
 
-    --key=<key>        Custom key function for top-k algorithm. [default: ]
+    --key=<key>        Custom key function for both frequent and top-k algorithms. [default: ]
                        Must be a Python lambda function in form of "lambda patt, matches: ...".
+                       Returnss a boolean for frequent algorithm and a float for top-k algorithm.
 ```
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -105,11 +106,15 @@ print(ps.topk(5))
 #  (2, [1, 3, 4])]
 ```
 
-- For top-k algorithm, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence IDs.
-    
-    - In default, `len(matches)` is used denoting the support of current pattern.
+- For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence IDs.
 
-    - Alternatively, as an example, `len(patt) if len(matches) >= <threshold> else 0` can be used to find the k longest frequent patterns.
+    - For frequent algorithm, in default, `True` is used denoting all the frequent patterns.
+
+        - Alternatively, as an example, `0 in matches` can be used to find all the frequent patterns covering the first sequence.
+    
+    - For top-k algorithm, in default, `len(matches)` is used denoting the support of current pattern.
+
+        - Alternatively, as an example, `len(patt) if len(matches) >= <threshold> else 0` can be used to find the k longest frequent patterns.
 
 ```python
 print(ps.topk(5, key=lambda patt, matches: len(patt) if len(matches) >= 2 else 0))

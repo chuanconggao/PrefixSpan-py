@@ -52,7 +52,7 @@ class PrefixSpan(object):
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                if key(patt, matches):
+                if key is None or key(patt, matches):
                     self._results.append((len(matches), patt))
 
                 if len(patt) == self.maxlen:
@@ -61,9 +61,6 @@ class PrefixSpan(object):
             for c, newmatches in self._scan(matches).items():
                 if len(newmatches) >= minsup:
                     frequent_rec(patt + [c], newmatches)
-
-        if key is None:
-            key = lambda patt, matches: True
 
         return self._mine(frequent_rec)
 

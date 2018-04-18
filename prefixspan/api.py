@@ -5,6 +5,7 @@ Matches = List[Tuple[int, int]]
 Pattern = List[int]
 Results = List[Tuple[int, Pattern]]
 Key = Callable[[Pattern, Matches], Any]
+Filter = Callable[[Pattern, Matches], bool]
 
 import sys
 from collections import defaultdict
@@ -46,34 +47,41 @@ class PrefixSpan(object):
         return alloccurs
 
 
-    def frequent(self, minsup, key=None):
-        # type: (int, Union[None, Key]) -> Results
+    def frequent(self, minsup, key=None, filter=None):
+        # type: (int, Union[None, Key], Union[None, Filter]) -> Results
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                if key is None or key(patt, matches):
-                    self._results.append((len(matches), patt))
+                if filter is None or filter(patt, matches):
+                    self._results.append((key(patt, matches), patt))
 
                 if len(patt) == self.maxlen:
                     return
 
             for c, newmatches in self._scan(matches).items():
-                if len(newmatches) >= minsup:
-                    frequent_rec(patt + [c], newmatches)
+                newpatt = patt + [c]
+                if key(newpatt, newmatches) >= minsup:
+                    frequent_rec(newpatt, newmatches)
+
+
+        db = self._db # Expose for key and filter
+        if key is None:
+            key = lambda patt, matches: len(matches)
 
         return self._mine(frequent_rec)
 
 
-    def topk(self, k, key=None):
-        # type: (int, Union[None, Key]) -> Results
+    def topk(self, k, key=None, filter=None):
+        # type: (int, Union[None, Key], Union[None, Filter]) -> Results
 
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                heappush(self._results, (key(patt, matches), patt))
-                if len(self._results) > k:
-                    heappop(self._results)
+                if filter is None or filter(patt, matches):
+                    heappush(self._results, (key(patt, matches), patt))
+                    if len(self._results) > k:
+                        heappop(self._results)
 
                 if len(patt) == self.maxlen:
                     return
@@ -90,6 +98,7 @@ class PrefixSpan(object):
                 topk_rec(newpatt, newmatches)
 
 
+        db = self._db # Expose for key and filter
         if key is None:
             key = lambda patt, matches: len(matches)
 

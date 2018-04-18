@@ -19,6 +19,9 @@ Options:
     --filter=<filter>  Custom filter function for both frequent and top-k algorithms. [default: ]
                        Must be a Python lambda function in form of "lambda patt, matches: ...".
                        Returnss a boolean value.
+
+    --nopruning        Disable anti-monotone based pruning. Can be extremely slow.
+                       Should only use for non-anti-monotone key function or benchmarking.
 """
 
 import sys
@@ -67,6 +70,8 @@ if __name__ == "__main__":
     key = checkFunc("--key") if argv["--key"] else None
     filter = checkFunc("--filter") if argv["--filter"] else None
 
+    pruning = not argv["--nopruning"]
+
     if argv["frequent"]:
         threshold = checkArg("<threshold>", lambda v: key or 0 < v <= len(db))
         func = ps.frequent
@@ -79,5 +84,5 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
-    for freq, patt in func(threshold, key=key, filter=filter):
+    for freq, patt in func(threshold, key=key, filter=filter, pruning=pruning):
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

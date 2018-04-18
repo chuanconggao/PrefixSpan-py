@@ -47,8 +47,8 @@ class PrefixSpan(object):
         return alloccurs
 
 
-    def frequent(self, minsup, key=None, filter=None):
-        # type: (int, Union[None, Key], Union[None, Filter]) -> Results
+    def frequent(self, minsup, key=None, filter=None, pruning=True):
+        # type: (int, Union[None, Key], Union[None, Filter], bool) -> Results
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
@@ -61,8 +61,10 @@ class PrefixSpan(object):
 
             for c, newmatches in self._scan(matches).items():
                 newpatt = patt + [c]
-                if key(newpatt, newmatches) >= minsup:
-                    frequent_rec(newpatt, newmatches)
+                if pruning and key(newpatt, newmatches) < minsup:
+                    continue
+
+                frequent_rec(newpatt, newmatches)
 
 
         db = self._db # Expose for key and filter
@@ -72,8 +74,8 @@ class PrefixSpan(object):
         return self._mine(frequent_rec)
 
 
-    def topk(self, k, key=None, filter=None):
-        # type: (int, Union[None, Key], Union[None, Filter]) -> Results
+    def topk(self, k, key=None, filter=None, pruning=True):
+        # type: (int, Union[None, Key], Union[None, Filter], bool) -> Results
 
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
@@ -92,7 +94,7 @@ class PrefixSpan(object):
                     reverse=True
                 ):
                 newpatt = patt + [c]
-                if len(self._results) == k and key(newpatt, newmatches) <= self._results[0][0]:
+                if pruning and len(self._results) == k and key(newpatt, newmatches) <= self._results[0][0]:
                     break
 
                 topk_rec(newpatt, newmatches)
@@ -102,4 +104,5 @@ class PrefixSpan(object):
         if key is None:
             key = lambda patt, matches: len(matches)
 
-        return sorted(self._mine(topk_rec), key=lambda x: -x[0])
+        # Sort by support in reverse, then by pattern.
+        return sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))

@@ -43,6 +43,9 @@ Options:
     --filter=<filter>  Custom filter function for both frequent and top-k algorithms. [default: ]
                        Must be a Python lambda function in form of "lambda patt, matches: ...".
                        Returnss a boolean value.
+
+    --nopruning        Disable anti-monotone based pruning. Can be extremely slow.
+                       Should only use for non-anti-monotone key function or benchmarking.
 ```
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -113,13 +116,13 @@ print(ps.topk(5))
 #  (2, [1, 3, 4])]
 ```
 
-# Custom Key Function and Custom Filter Function
+# Custom Key Function
 
-- For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
+For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
     
-    - In default, `len(matches)` is used denoting the support of current pattern.
+- In default, `len(matches)` is used denoting the support of current pattern.
 
-    - Alternatively, any anti-monotone function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
+- Alternatively, any anti-monotone function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
 
 ```python
 print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
@@ -130,11 +133,15 @@ print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 #  (10, [1, 3, 4])]
 ```
 
-- For both frequent and top-k algorithms, a custom filter function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
+- If really necessary, any non-anti-monotone function can be used, when anti-monotone based pruning is disabled. However, it can be extremely slow. As an example, `len(patt) if len(matches) >= 2 else 0` can be used to find the longest patterns with the support of at least `2`.
 
-    - In default, `True` is used denoting all the patterns.
+# Custom Filter Function
 
-    - Alternatively, any function can be used. As an example, `any(i == 0 for i, _ in matches)` can be used to find only the patterns covering the first sequence.
+For both frequent and top-k algorithms, a custom filter function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
+
+- In default, `True` is used denoting all the patterns.
+
+- Alternatively, any function can be used. As an example, `any(i == 0 for i, _ in matches)` can be used to find only the patterns covering the first sequence.
 
 ```python
 print(ps.topk(5, filter=lambda patt, matches: any(i == 0 for i, _ in matches)))

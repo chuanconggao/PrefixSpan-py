@@ -8,6 +8,8 @@ Usage:
 
 
 Options:
+    --closed           Return only closed patterns.
+
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
 
@@ -24,12 +26,14 @@ Options:
                        Should only use for non-anti-monotone key function or benchmarking.
 """
 
+from typing import *
+
 import sys
 from functools import partial
 
 from docopt import docopt
 
-from prefixspan.api import PrefixSpan
+from prefixspan import PrefixSpan
 
 print2 = partial(print, file=sys.stderr)
 
@@ -48,7 +52,7 @@ def checkArg(arg, cond):
 
 
 def checkFunc(arg):
-    # type: (str) -> Callable[Any, Any]
+    # type: (str) -> Callable[..., bool]
     try:
         return eval(argv[arg])
     except:
@@ -67,22 +71,22 @@ if __name__ == "__main__":
 
     ps = PrefixSpan(db)
 
+    closed = argv["--closed"]
+
     key = checkFunc("--key") if argv["--key"] else None
     filter = checkFunc("--filter") if argv["--filter"] else None
 
     pruning = not argv["--nopruning"]
 
-    if argv["frequent"]:
-        threshold = checkArg("<threshold>", lambda v: key or 0 < v <= len(db))
-        func = ps.frequent
-    elif argv["top-k"]:
-        threshold = checkArg("<threshold>", lambda v: key or v > 0)
-        func = ps.topk
+    threshold = checkArg("<threshold>", lambda v: key is not None or v > 0)
+
+    func = ps.frequent if argv["frequent"] else ps.topk
+
 
     if argv["--minlen"]:
         ps.minlen = checkArg("--minlen", lambda v: v > 0)
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
-    for freq, patt in func(threshold, key=key, filter=filter, pruning=pruning):
+    for freq, patt in func(threshold, key=key, filter=filter, closed=closed, pruning=pruning):
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

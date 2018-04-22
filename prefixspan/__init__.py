@@ -1,3 +1,3 @@
 #! /usr/bin/env python3
 
-from .api import PrefixSpan
+from .prefixspan import PrefixSpan

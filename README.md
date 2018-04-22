@@ -2,19 +2,25 @@
 [![PyPi pyversions](https://img.shields.io/pypi/pyversions/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 [![PyPi license](https://img.shields.io/pypi/l/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 
-The shortest yet efficient implementation of [PrefixSpan](http://www.cs.sfu.ca/~jpei/publications/span.pdf) in Python 3, with less than 20 lines in core part (scan and extend). You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
+The shortest yet efficient implementation of famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/) in Python 3, with less than 20 lines in core part (scan and extend).
 
-It is very simple to use this package under Python 2. You only need to tweak 2-3 lines.
+- You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
+
+Also includes the implementation of famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986), which extends the framework of PrefixSpan algorithm.
+
+- A pattern is closed if there is no super-pattern with the same frequency.
+
+- BIDE is much faster than PrefixSpan, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
 
 # Features
 
 Outputs traditional single-item sequential patterns, where gaps are allowed between items.
 
-- Mining top-k patterns is also supported, with respective optimizations on efficiency.
+- Mining top-k patterns is supported, with respective optimizations on efficiency.
 
-- You can also limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
+- You can limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
--  Custom key function and custom filter function can also be applied.
+- Custom key function and custom filter function can be applied.
 
 # Installation
 
@@ -22,9 +28,9 @@ This package is available on PyPi. Just use `pip3 install -U prefixspan` to inst
 
 # CLI Usage
 
-You can simply use the algorithm on terminal.
+You can simply use the algorithms on terminal.
 
-```
+``` text
 Usage:
     prefixspan-cli (frequent | top-k) <threshold> [options] [<file>]
 
@@ -32,6 +38,8 @@ Usage:
 
 
 Options:
+    --closed           Return only closed patterns.
+
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
 
@@ -50,7 +58,9 @@ Options:
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
 
-```
+``` text
+cat test.dat
+
 0 1 2 3 4
 1 1 1 3 4
 2 1 2 2 0
@@ -59,7 +69,9 @@ Options:
 
 * The patterns and their respective frequencies are printed to standard output.
 
-```
+``` text
+prefixspan-cli frequent 2 test.dat
+
 0 : 2
 1 : 4
 1 2 : 3
@@ -76,12 +88,25 @@ Options:
 4 : 2
 ```
 
+* As you can see, the closed patterns are much more compact.
+
+``` text
+prefixspan-cli frequent 2 --closed test.dat
+
+0 : 2
+1 : 4
+1 2 : 3
+1 2 2 : 2
+1 3 4 : 2
+1 1 1 : 2
+```
+
 # API Usage
 
-Alternatively, you can use the algorithm via API.
+Alternatively, you can use the algorithms via API.
 
 ``` python
-from prefixspan import PrefixSpan
+from prefixspan import PrefixSpan, BIDE
 
 db = [
     [0, 1, 2, 3, 4],
@@ -89,6 +114,7 @@ db = [
     [2, 1, 2, 2, 0],
     [1, 1, 1, 2, 2],
 ]
+
 
 ps = PrefixSpan(db)
 
@@ -114,17 +140,35 @@ print(ps.topk(5))
 #  (3, [1, 2]),
 #  (2, [1, 3]),
 #  (2, [1, 3, 4])]
+
+
+ps = PrefixSpan(db, closed=True)
+
+print(ps.frequent(2))
+# [(2, [0]),
+#  (4, [1]),
+#  (3, [1, 2]),
+#  (2, [1, 2, 2]),
+#  (2, [1, 3, 4]),
+#  (2, [1, 1, 1])]
+
+print(ps.topk(5))
+# [(4, [1]),
+#  (3, [1, 2]),
+#  (2, [1, 1, 1]),
+#  (2, [1, 2, 2]),
+#  (2, [1, 3, 4])]
 ```
 
 # Custom Key Function
 
-For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
+For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
     
 - In default, `len(matches)` is used denoting the support of current pattern.
 
 - Alternatively, any anti-monotone function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
 
-```python
+``` python
 print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 # [(20, [1]),
 #  (15, [2]),
@@ -137,13 +181,13 @@ print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 
 # Custom Filter Function
 
-For both frequent and top-k algorithms, a custom filter function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence (ID, position) tuples.
+For both frequent and top-k algorithms, a custom filter function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
 
 - In default, `True` is used denoting all the patterns.
 
 - Alternatively, any function can be used. As an example, `any(i == 0 for i, _ in matches)` can be used to find only the patterns covering the first sequence.
 
-```python
+``` python
 print(ps.topk(5, filter=lambda patt, matches: any(i == 0 for i, _ in matches)))
 # [(4, [1]),
 #  (3, [1, 2]),

@@ -164,7 +164,11 @@ For both frequent and top-k algorithms, a custom key function `key=lambda patt, 
     
 - In default, `len(matches)` is used denoting the support of current pattern.
 
-- Alternatively, any anti-monotone function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
+- Alternatively, any key function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
+
+- For efficiency, an anti-monotone upper-bound function must also be specified for pruning.
+
+    - If unspecified, the key function is also the upper-bound function, and must be anti-monotone.
 
 ``` python
 print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))

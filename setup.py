@@ -2,26 +2,39 @@
 
 from setuptools import setup
 
+url = "https://github.com/chuanconggao/PrefixSpan-py"
+version = "0.3.2"
+
 setup(
     name="prefixspan",
+
     packages=["prefixspan"],
     scripts=["prefixspan-cli"],
-    version="0.3.1",
-    description="PrefixSpan and BIDE in Python 3",
+
+    url=url,
+
+    version=version,
+    download_url=f"{url}/tarball/{version}",
+
+    license="MIT",
+
     author="Chuancong Gao",
     author_email="chuancong@gmail.com",
-    url="https://github.com/chuanconggao/PrefixSpan-py",
-    download_url="https://github.com/chuanconggao/PrefixSpan-py/tarball/0.3.1",
+
+    description="PrefixSpan and BIDE in Python 3",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+
     keywords=[
         "data mining",
         "pattern mining"
     ],
-    license="MIT",
     classifiers=[
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3"
     ],
+
     python_requires=">= 3",
     install_requires=[
         "docopt >= 0.6.2",

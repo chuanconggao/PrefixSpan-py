@@ -2,7 +2,7 @@
 
 from .localtyping import *
 
-from heapq import heappop, heappush
+from heapq import heappush, heappushpop
 
 from .scan import scan
 from .closed import isclosed, canprune
@@ -26,17 +26,22 @@ class PrefixSpan(object):
         return self._results
 
 
-    def frequent(self, minsup, key=None, filter=None, closed=False, pruning=True):
-        # type: (int, Union[None, Key], Union[None, Filter], bool, bool) -> Results
+    def frequent(
+            self, minsup, closed=False,
+            key=None, bound=None,
+            filter=None,
+        pruning=True):
+        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                if (
+                sup = key(patt, matches)
+                if sup >= minsup and (
                         (filter is None or filter(patt, matches)) and
                         (not closed or isclosed(db, patt, matches))
                     ):
-                    self._results.append((key(patt, matches), patt))
+                    self._results.append((sup, patt))
 
                 if len(patt) == self.maxlen:
                     return
@@ -44,7 +49,7 @@ class PrefixSpan(object):
             for c, newmatches in scan(db, matches).items():
                 newpatt = patt + [c]
                 if pruning and (
-                        key(newpatt, newmatches) < minsup or
+                        bound(newpatt, newmatches) < minsup or
                         closed and canprune(db, newpatt, newmatches)
                     ):
                     continue
@@ -54,24 +59,28 @@ class PrefixSpan(object):
 
         db = self._db # Expose for key and filter
         if key is None:
-            key = lambda patt, matches: len(matches)
+            key = bound = lambda patt, matches: len(matches)
 
         return self._mine(frequent_rec)
 
 
-    def topk(self, k, key=None, filter=None, closed=False, pruning=True):
-        # type: (int, Union[None, Key], Union[None, Filter], bool, bool) -> Results
+    def topk(
+            self, k, closed=False,
+            key=None, bound=None,
+            filter=None,
+            pruning=True
+        ):
+        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
 
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                if (
+                sup = key(patt, matches)
+                if not (len(self._results) == k and sup <= self._results[0][0]) and (
                         (filter is None or filter(patt, matches)) and
                         (not closed or isclosed(db, patt, matches))
                     ):
-                    heappush(self._results, (key(patt, matches), patt))
-                    if len(self._results) > k:
-                        heappop(self._results)
+                    (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt))
 
                 if len(patt) == self.maxlen:
                     return
@@ -83,7 +92,7 @@ class PrefixSpan(object):
                 ):
                 newpatt = patt + [c]
                 if pruning:
-                    if len(self._results) == k and key(newpatt, newmatches) <= self._results[0][0]:
+                    if len(self._results) == k and bound(newpatt, newmatches) <= self._results[0][0]:
                         break
 
                     if closed and canprune(db, newpatt, newmatches):
@@ -94,7 +103,7 @@ class PrefixSpan(object):
 
         db = self._db # Expose for key and filter
         if key is None:
-            key = lambda patt, matches: len(matches)
+            key = bound = lambda patt, matches: len(matches)
 
         # Sort by support in reverse, then by pattern.
         return sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))

@@ -3,7 +3,7 @@
 from setuptools import setup
 
 url = "https://github.com/chuanconggao/PrefixSpan-py"
-version = "0.3.2"
+version = "0.3.3"
 
 setup(
     name="prefixspan",
@@ -26,8 +26,8 @@ setup(
     long_description_content_type="text/markdown",
 
     keywords=[
-        "data mining",
-        "pattern mining"
+        "data-mining",
+        "pattern-mining"
     ],
     classifiers=[
         "Operating System :: OS Independent",

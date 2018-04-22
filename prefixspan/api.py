@@ -30,7 +30,8 @@ class PrefixSpan(object):
             self, minsup, closed=False,
             key=None, bound=None,
             filter=None,
-        pruning=True):
+            pruning=True
+        ):
         # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
 
         def frequent_rec(patt, matches):
@@ -46,8 +47,8 @@ class PrefixSpan(object):
                 if len(patt) == self.maxlen:
                     return
 
-            for c, newmatches in scan(db, matches).items():
-                newpatt = patt + [c]
+            for newitem, newmatches in scan(db, matches).items():
+                newpatt = patt + [newitem]
                 if pruning and (
                         bound(newpatt, newmatches) < minsup or
                         closed and canprune(db, newpatt, newmatches)
@@ -71,12 +72,15 @@ class PrefixSpan(object):
             pruning=True
         ):
         # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
+        def canpass(sup):
+            return len(self._results) == k and sup <= self._results[0][0]
+
 
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
                 sup = key(patt, matches)
-                if not (len(self._results) == k and sup <= self._results[0][0]) and (
+                if not canpass(sup) and (
                         (filter is None or filter(patt, matches)) and
                         (not closed or isclosed(db, patt, matches))
                     ):
@@ -85,14 +89,14 @@ class PrefixSpan(object):
                 if len(patt) == self.maxlen:
                     return
 
-            for c, newmatches in sorted(
+            for newitem, newmatches in sorted(
                     scan(db, matches).items(),
                     key=lambda x: key(patt + [x[0]], x[1]),
                     reverse=True
                 ):
-                newpatt = patt + [c]
+                newpatt = patt + [newitem]
                 if pruning:
-                    if len(self._results) == k and bound(newpatt, newmatches) <= self._results[0][0]:
+                    if canpass(bound(newpatt, newmatches)):
                         break
 
                     if closed and canprune(db, newpatt, newmatches):

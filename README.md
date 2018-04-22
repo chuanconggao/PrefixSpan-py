@@ -106,7 +106,7 @@ prefixspan-cli frequent 2 --closed test.dat
 Alternatively, you can use the algorithms via API.
 
 ``` python
-from prefixspan import PrefixSpan, BIDE
+from prefixspan import PrefixSpan
 
 db = [
     [0, 1, 2, 3, 4],
@@ -115,8 +115,8 @@ db = [
     [1, 1, 1, 2, 2],
 ]
 
-
 ps = PrefixSpan(db)
+
 
 print(ps.frequent(2))
 # [(2, [0]),
@@ -142,9 +142,7 @@ print(ps.topk(5))
 #  (2, [1, 3, 4])]
 
 
-ps = PrefixSpan(db, closed=True)
-
-print(ps.frequent(2))
+print(ps.frequent(2, closed=True))
 # [(2, [0]),
 #  (4, [1]),
 #  (3, [1, 2]),
@@ -152,7 +150,7 @@ print(ps.frequent(2))
 #  (2, [1, 3, 4]),
 #  (2, [1, 1, 1])]
 
-print(ps.topk(5))
+print(ps.topk(5, closed=True))
 # [(4, [1]),
 #  (3, [1, 2]),
 #  (2, [1, 1, 1]),

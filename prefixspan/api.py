@@ -29,10 +29,9 @@ class PrefixSpan(object):
     def frequent(
             self, minsup, closed=False,
             key=None, bound=None,
-            filter=None,
-            pruning=True
+            filter=None
         ):
-        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
+        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
@@ -49,7 +48,7 @@ class PrefixSpan(object):
 
             for newitem, newmatches in scan(db, matches).items():
                 newpatt = patt + [newitem]
-                if pruning and (
+                if (
                         bound(newpatt, newmatches) < minsup or
                         closed and canprune(db, newpatt, newmatches)
                     ):
@@ -68,10 +67,9 @@ class PrefixSpan(object):
     def topk(
             self, k, closed=False,
             key=None, bound=None,
-            filter=None,
-            pruning=True
+            filter=None
         ):
-        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter], bool) -> Results
+        # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
         def canpass(sup):
             return len(self._results) == k and sup <= self._results[0][0]
 
@@ -95,12 +93,11 @@ class PrefixSpan(object):
                     reverse=True
                 ):
                 newpatt = patt + [newitem]
-                if pruning:
-                    if canpass(bound(newpatt, newmatches)):
-                        break
 
-                    if closed and canprune(db, newpatt, newmatches):
-                        continue
+                if canpass(bound(newpatt, newmatches)):
+                    break
+                if closed and canprune(db, newpatt, newmatches):
+                    continue
 
                 topk_rec(newpatt, newmatches)
 

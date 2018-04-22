@@ -24,9 +24,6 @@ Options:
 
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
-
-    --nopruning        Disable anti-monotone based pruning. Can be extremely slow.
-                       Should only use for non-anti-monotone bound function or benchmarking.
 """
 
 from typing import *
@@ -67,26 +64,21 @@ def checkFunc(arg):
 if __name__ == "__main__":
     argv = docopt(__doc__)
 
-    db = [
+    ps = PrefixSpan([
         [int(v) for v in line.rstrip().split(' ')]
         for line in (open(argv["<file>"]) if argv["<file>"] else sys.stdin)
-    ]
+    ])
 
-    ps = PrefixSpan(db)
-
-    closed = argv["--closed"]
+    func = ps.frequent if argv["frequent"] else ps.topk
 
     key = checkFunc("--key") if argv["--key"] else None
     bound = checkFunc("--bound") if argv["--bound"] else key
 
-    filter = checkFunc("--filter") if argv["--filter"] else None
-
-    pruning = not argv["--nopruning"]
-
     threshold = checkArg("<threshold>", lambda v: key is not None or v > 0)
 
-    func = ps.frequent if argv["frequent"] else ps.topk
+    closed = argv["--closed"]
 
+    filter = checkFunc("--filter") if argv["--filter"] else None
 
     if argv["--minlen"]:
         ps.minlen = checkArg("--minlen", lambda v: v > 0)
@@ -96,7 +88,6 @@ if __name__ == "__main__":
     for freq, patt in func(
             threshold, closed=closed,
             key=key, bound=bound,
-            filter=filter,
-            pruning=pruning
+            filter=filter
         ):
         print("{} : {}".format(' '.join(str(v) for v in patt), freq))

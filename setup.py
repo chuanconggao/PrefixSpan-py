@@ -3,7 +3,7 @@
 from setuptools import setup
 
 url = "https://github.com/chuanconggao/PrefixSpan-py"
-version = "0.3.3"
+version = "0.3.4"
 
 setup(
     name="prefixspan",

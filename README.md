@@ -54,9 +54,6 @@ Options:
                        
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
-    
-    --nopruning        Disable anti-monotone based pruning. Can be extremely slow.
-                       Should only use for non-anti-monotone bound function or benchmarking.
 ```
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -181,8 +178,6 @@ print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 #  (10, [1, 3]),
 #  (10, [1, 3, 4])]
 ```
-
-- If really necessary, any non-anti-monotone function can be used, when anti-monotone based pruning is disabled. However, it can be extremely slow. As an example, `len(patt) if len(matches) >= 2 else 0` can be used to find the longest patterns with the support of at least `2`.
 
 # Custom Filter Function
 

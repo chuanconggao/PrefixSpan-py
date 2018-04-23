@@ -11,11 +11,8 @@ Options:
     --closed           Return only closed patterns.
 
     --key=<key>        Custom key function. [default: ]
-                       Must be a Python function in form of "lambda patt, matches: ...", returning a float value.
-                       Returns a float value.
-    --bound=<bound>    The upper-bound function of the respective key function. [default: ]
-                       When unspecified, the same key function is used.
-                       Must be a Python function in form of "lambda patt, matches: ...", returning a float value.
+                       Must be a Python function in form of "lambda patt, matches: ...", returning an integer value.
+    --bound=<bound>    The upper-bound function of the respective key function. When unspecified, the same key function is used. [default: ]
                        Must be no less than the key function, i.e. bound(patt, matches) ≥ key(patt, matches).
                        Must be anti-monotone, i.e. for patt1 ⊑ patt2, bound(patt1, matches1) ≥ bound(patt2, matches2).
 

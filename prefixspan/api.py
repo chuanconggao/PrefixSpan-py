@@ -32,32 +32,38 @@ class PrefixSpan(object):
             filter=None
         ):
         # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+        def canpass(sup):
+            # type: (int) -> bool
+            return sup < minsup
+
+
+        def verify(patt, matches):
+            # type: (Pattern, Matches) -> None
+            sup = key(patt, matches)
+            if canpass(sup):
+                return
+
+            if (not closed or isclosed(self._db, patt, matches)) and (filter is None or filter(patt, matches)):
+                self._results.append((sup, patt))
+
 
         def frequent_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                sup = key(patt, matches)
-                if sup >= minsup and (
-                        (filter is None or filter(patt, matches)) and
-                        (not closed or isclosed(db, patt, matches))
-                    ):
-                    self._results.append((sup, patt))
+                verify(patt, matches)
 
                 if len(patt) == self.maxlen:
                     return
 
             for newitem, newmatches in scan(db, matches).items():
                 newpatt = patt + [newitem]
-                if (
-                        bound(newpatt, newmatches) < minsup or
-                        closed and canprune(db, newpatt, newmatches)
-                    ):
+                if canpass(bound(newpatt, newmatches)) or closed and canprune(db, newpatt, newmatches):
                     continue
 
                 frequent_rec(newpatt, newmatches)
 
 
-        db = self._db # Expose for key and filter
+        db = self._db # Expose for key and filter to access
         if key is None:
             key = bound = lambda patt, matches: len(matches)
 
@@ -71,18 +77,24 @@ class PrefixSpan(object):
         ):
         # type: (int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
         def canpass(sup):
+            # type: (int) -> bool
             return len(self._results) == k and sup <= self._results[0][0]
+
+
+        def verify(patt, matches):
+            # type: (Pattern, Matches) -> None
+            sup = key(patt, matches)
+            if canpass(sup):
+                return
+
+            if (not closed or isclosed(self._db, patt, matches)) and (filter is None or filter(patt, matches)):
+                (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt))
 
 
         def topk_rec(patt, matches):
             # type: (Pattern, Matches) -> None
             if len(patt) >= self.minlen:
-                sup = key(patt, matches)
-                if not canpass(sup) and (
-                        (filter is None or filter(patt, matches)) and
-                        (not closed or isclosed(db, patt, matches))
-                    ):
-                    (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt))
+                verify(patt, matches)
 
                 if len(patt) == self.maxlen:
                     return
@@ -102,7 +114,7 @@ class PrefixSpan(object):
                 topk_rec(newpatt, newmatches)
 
 
-        db = self._db # Expose for key and filter
+        db = self._db # Expose for key and filter to access
         if key is None:
             key = bound = lambda patt, matches: len(matches)
 

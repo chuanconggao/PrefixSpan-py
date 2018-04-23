@@ -7,5 +7,5 @@ Matches = List[Tuple[int, int]]
 Pattern = List[int]
 Results = List[Tuple[int, Pattern]]
 
-Key = Callable[[Pattern, Matches], Any]
+Key = Callable[[Pattern, Matches], int]
 Filter = Callable[[Pattern, Matches], bool]

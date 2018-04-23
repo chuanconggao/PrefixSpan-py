@@ -8,14 +8,14 @@ def scan(db, matches):
     # type: (DB, Matches) -> Dict[int, Matches]
     alloccurs = defaultdict(list) # type: Dict[int, Matches]
 
-    for i, pos in matches:
+    for i, lastpos in matches:
         seq = db[i]
 
         occurs = set() # type: Set[int]
-        for j in range(pos + 1, len(seq)):
-            k = seq[j]
-            if k not in occurs:
-                occurs.add(k)
-                alloccurs[k].append((i, j))
+        for pos in range(lastpos + 1, len(seq)):
+            item = seq[pos]
+            if item not in occurs:
+                occurs.add(item)
+                alloccurs[item].append((i, pos))
 
     return alloccurs

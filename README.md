@@ -10,7 +10,7 @@ Also includes the implementation of famous frequent **closed** sequential patter
 
 - A pattern is closed if there is no super-pattern with the same frequency.
 
-- BIDE is much faster than PrefixSpan, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
+- BIDE is usually much faster than PrefixSpan on large datasets, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
 
 # Features
 
@@ -39,7 +39,7 @@ Usage:
 
 Options:
     --closed           Return only closed patterns.
-    
+
     --key=<key>        Custom key function. [default: ]
                        Must be a Python function in form of "lambda patt, matches: ...", returning an integer value.
     --bound=<bound>    The upper-bound function of the respective key function. When unspecified, the same key function is used. [default: ]
@@ -113,8 +113,11 @@ db = [
 ]
 
 ps = PrefixSpan(db)
+```
 
+For details of each parameter, please refer to the `PrefixSpan` class in `prefixspan/api.py`.
 
+``` python
 print(ps.frequent(2))
 # [(2, [0]),
 #  (4, [1]),
@@ -159,11 +162,11 @@ print(ps.topk(5, closed=True))
 
 For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
     
-- In default, `len(matches)` is used denoting the support of current pattern.
+- In default, `len(matches)` is used denoting the frequency of current pattern.
 
 - Alternatively, any key function can be used. As an example, `sum(len(db[i]) for i in matches)` can be used to find the satisfying patterns according to the number of matched items.
 
-- For efficiency, an anti-monotone upper-bound function must also be specified for pruning.
+- For efficiency, an anti-monotone upper-bound function should also be specified for pruning.
 
     - If unspecified, the key function is also the upper-bound function, and must be anti-monotone.
 
@@ -178,19 +181,19 @@ print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 
 # Custom Filter Function
 
-For both frequent and top-k algorithms, a custom filter function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
+For both frequent and top-k algorithms, a custom filter function `filter=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
 
-- In default, `True` is used denoting all the patterns.
+- In default, `filter` is not applied and all the patterns are returned.
 
-- Alternatively, any function can be used. As an example, `any(i == 0 for i, _ in matches)` can be used to find only the patterns covering the first sequence.
+- Alternatively, any function can be used. As an example, `matches[0][0] > 0` can be used to exclude the patterns covering the first sequence.
 
 ``` python
-print(ps.topk(5, filter=lambda patt, matches: any(i == 0 for i, _ in matches)))
-# [(4, [1]),
-#  (3, [1, 2]),
-#  (3, [2]),
-#  (2, [1, 3, 4]),
-#  (2, [1, 4])]
+print(ps.topk(5, filter=lambda patt, matches: matches[0][0] > 0))
+# [(2, [1, 1]),
+#  (2, [1, 1, 1]),
+#  (2, [1, 2, 2]),
+#  (2, [2, 2]),
+#  (1, [1, 2, 2, 0])]
 ```
 
 # Tip

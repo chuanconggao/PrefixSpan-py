@@ -39,21 +39,24 @@ Usage:
 
 Options:
     --closed           Return only closed patterns.
-
+    
+    --key=<key>        Custom key function. [default: ]
+                       Must be a Python function in form of "lambda patt, matches: ...", returning a float value.
+                       Returns a float value.
+    --bound=<bound>    The upper-bound function of the respective key function. [default: ]
+                       When unspecified, the same key function is used.
+                       Must be a Python function in form of "lambda patt, matches: ...", returning a float value.
+                       Must be no less than the key function, i.e. bound(patt, matches) ≥ key(patt, matches).
+                       Must be anti-monotone, i.e. for patt1 ⊑ patt2, bound(patt1, matches1) ≥ bound(patt2, matches2).
+                       
+    --filter=<filter>  Custom filter function. [default: ]
+                       Must be a Python function in form of "lambda patt, matches: ...", returning a boolean value.
+                       
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
-
-    --key=<key>        Custom key function for both frequent and top-k algorithms. [default: ]
-                       Must be a Python lambda function in form of "lambda patt, matches: ...".
-                       Must be anti-monotone, i.e. for patt1 ⊑ patt2, f(patt1, matches1) ≥ f(patt2, matches2).
-                       Returns a float value.
-
-    --filter=<filter>  Custom filter function for both frequent and top-k algorithms. [default: ]
-                       Must be a Python lambda function in form of "lambda patt, matches: ...".
-                       Returnss a boolean value.
-
+    
     --nopruning        Disable anti-monotone based pruning. Can be extremely slow.
-                       Should only use for non-anti-monotone key function or benchmarking.
+                       Should only use for non-anti-monotone bound function or benchmarking.
 ```
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:

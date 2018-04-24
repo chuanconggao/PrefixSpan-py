@@ -27,12 +27,7 @@ def __reversescan(db, patt, matches):
         return len(closeditems) > 0
 
 
-    matches = matches[:]
-
-    return any(
-        islocalclosed(previtem)
-        for previtem in reversed(patt[:-1])
-    )
+    return any(islocalclosed(previtem) for previtem in reversed(patt[:-1]))
 
 
 def isclosed(db, patt, matches):
@@ -49,4 +44,4 @@ def isclosed(db, patt, matches):
 def canprune(db, patt, matches):
     # type: (DB, Pattern, Matches) -> bool
     # Add a pseduo item indicating the start of sequence
-    return __reversescan(db, [None, *patt], matches)
+    return __reversescan(db, [None, *patt], matches[:])

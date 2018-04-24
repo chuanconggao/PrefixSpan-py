@@ -26,6 +26,8 @@ class PrefixSpan(object):
         return self._results
 
 
+    _defaultkey = lambda patt, matches: len(matches)
+
     def frequent(
             self, minsup, closed=False,
             key=None, bound=None,
@@ -55,17 +57,16 @@ class PrefixSpan(object):
                 if len(patt) == self.maxlen:
                     return
 
-            for newitem, newmatches in scan(db, matches).items():
+            for newitem, newmatches in scan(self._db, matches).items():
                 newpatt = patt + [newitem]
-                if canpass(bound(newpatt, newmatches)) or closed and canprune(db, newpatt, newmatches):
+                if canpass(bound(newpatt, newmatches)) or closed and canprune(self._db, newpatt, newmatches):
                     continue
 
                 frequent_rec(newpatt, newmatches)
 
 
-        db = self._db # Expose for key and filter to access
         if key is None:
-            key = bound = lambda patt, matches: len(matches)
+            key = bound = PrefixSpan._defaultkey
 
         return self._mine(frequent_rec)
 
@@ -100,7 +101,7 @@ class PrefixSpan(object):
                     return
 
             for newitem, newmatches in sorted(
-                    scan(db, matches).items(),
+                    scan(self._db, matches).items(),
                     key=lambda x: key(patt + [x[0]], x[1]),
                     reverse=True
                 ):
@@ -108,15 +109,14 @@ class PrefixSpan(object):
 
                 if canpass(bound(newpatt, newmatches)):
                     break
-                if closed and canprune(db, newpatt, newmatches):
+                if closed and canprune(self._db, newpatt, newmatches):
                     continue
 
                 topk_rec(newpatt, newmatches)
 
 
-        db = self._db # Expose for key and filter to access
         if key is None:
-            key = bound = lambda patt, matches: len(matches)
+            key = bound = PrefixSpan._defaultkey
 
         # Sort by support in reverse, then by pattern.
         return sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))

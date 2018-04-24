@@ -61,10 +61,12 @@ def checkFunc(arg):
 if __name__ == "__main__":
     argv = docopt(__doc__)
 
-    ps = PrefixSpan([
+    db = [
         [int(v) for v in line.rstrip().split(' ')]
         for line in (open(argv["<file>"]) if argv["<file>"] else sys.stdin)
-    ])
+    ]
+
+    ps = PrefixSpan(db)
 
     func = ps.frequent if argv["frequent"] else ps.topk
 

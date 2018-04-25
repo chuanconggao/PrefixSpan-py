@@ -8,9 +8,7 @@ def __reversescan(db, patt, matches):
         # type: (Union[int, None]) -> bool
         closeditems = set() # type: Set[int]
 
-        for k, match in enumerate(matches):
-            i, endpos = match
-
+        for k, (i, endpos) in enumerate(matches):
             localitems = set()
 
             for startpos in range(endpos - 1, -1, -1):

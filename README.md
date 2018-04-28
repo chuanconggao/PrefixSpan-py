@@ -2,11 +2,11 @@
 [![PyPi pyversions](https://img.shields.io/pypi/pyversions/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 [![PyPi license](https://img.shields.io/pypi/l/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 
-The shortest yet efficient implementation of famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/) in Python 3, with less than 20 lines in core part (scan and extend).
+The shortest yet efficient implementation of famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/) in Python 3, with less than 20 lines in core part (scan in `scan.py` and extend in `frequent.py`).
 
 - You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
 
-Also includes the implementation of famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986), which extends the framework of PrefixSpan algorithm.
+Also includes the implementation of famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986), which extends the framework of PrefixSpan algorithm (in `closed.py`).
 
 - A pattern is closed if there is no super-pattern with the same frequency.
 

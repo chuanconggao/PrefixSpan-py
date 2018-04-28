@@ -38,6 +38,8 @@ Usage:
 
 
 Options:
+    --text             Treat each item as text instead of integer.
+
     --closed           Return only closed patterns.
 
     --key=<key>        Custom key function. [default: ]
@@ -64,6 +66,17 @@ cat test.dat
 1 1 1 2 2
 ```
 
+- When dealing with text data, please use the `--text` option. Each sequence is words separated by space, assuming stop words have been removed, like this example:
+
+``` text
+cat test.txt
+
+a b c d e
+b b b d e
+c b c c a
+b b b c c
+```
+
 * The patterns and their respective frequencies are printed to standard output.
 
 ``` text
@@ -85,6 +98,25 @@ prefixspan-cli frequent 2 test.dat
 4 : 2
 ```
 
+``` text
+prefixspan-cli frequent 2 --text test.txt
+
+a : 2
+b : 4
+b c : 3
+b c c : 2
+b d : 2
+b d e : 2
+b e : 2
+b b : 2
+b b b : 2
+c : 3
+c c : 2
+d : 2
+d e : 2
+e : 2
+```
+
 * As you can see, the closed patterns are much more compact.
 
 ``` text
@@ -96,6 +128,17 @@ prefixspan-cli frequent 2 --closed test.dat
 1 2 2 : 2
 1 3 4 : 2
 1 1 1 : 2
+```
+
+``` text
+prefixspan-cli frequent 2 --text --closed test.txt
+
+a : 2
+b : 4
+b c : 3
+b c c : 2
+b d e : 2
+b b b : 2
 ```
 
 # API Usage

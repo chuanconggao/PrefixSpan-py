@@ -8,6 +8,8 @@ Usage:
 
 
 Options:
+    --text             Treat each item as text instead of integer.
+
     --closed           Return only closed patterns.
 
     --key=<key>        Custom key function. [default: ]
@@ -61,10 +63,25 @@ def checkFunc(arg):
 if __name__ == "__main__":
     argv = docopt(__doc__)
 
-    db = [
-        [int(v) for v in line.rstrip().split(' ')]
+    istext = argv["--text"]
+
+    docs = [
+        line.strip().split(' ')
         for line in (open(argv["<file>"]) if argv["<file>"] else sys.stdin)
     ]
+
+    if istext:
+        wordmap = {}
+
+        db = [
+            [wordmap.setdefault(w, len(wordmap)) for w in doc]
+            for doc in docs
+        ]
+    else:
+        db = [
+            [int(w) for w in doc]
+            for doc in docs
+        ]
 
     ps = PrefixSpan(db)
 
@@ -84,9 +101,16 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
+
+    if istext:
+        invwordmap = {i: w for w, i in wordmap.items()}
+
     for freq, patt in func(
             threshold, closed=closed,
             key=key, bound=bound,
             filter=filter
         ):
-        print("{} : {}".format(' '.join(str(v) for v in patt), freq))
+        print("{} : {}".format(' '.join(
+            (invwordmap[i] for i in patt) if istext
+            else (str(i) for i in patt)
+        ), freq))

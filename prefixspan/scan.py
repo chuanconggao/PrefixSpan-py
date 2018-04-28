@@ -11,11 +11,9 @@ def scan(db, matches):
     for i, lastpos in matches:
         seq = db[i]
 
-        occurs = set() # type: Set[int]
         for pos in range(lastpos + 1, len(seq)):
-            item = seq[pos]
-            if item not in occurs:
-                occurs.add(item)
-                alloccurs[item].append((i, pos))
+            l = alloccurs[seq[pos]]
+            if len(l) == 0 or l[-1][0] != i:
+                l.append((i, pos))
 
     return alloccurs

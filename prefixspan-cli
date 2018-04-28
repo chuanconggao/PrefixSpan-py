@@ -71,7 +71,7 @@ if __name__ == "__main__":
     ]
 
     if istext:
-        wordmap = {}
+        wordmap = {} # type: Dict[str, int]
 
         db = [
             [wordmap.setdefault(w, len(wordmap)) for w in doc]

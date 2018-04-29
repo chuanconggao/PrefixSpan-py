@@ -11,6 +11,7 @@ Options:
     --text             Treat each item as text instead of integer.
 
     --closed           Return only closed patterns.
+    --generator        Return only generator patterns.
 
     --key=<key>        Custom key function. [default: ]
                        Must be a Python function in form of "lambda patt, matches: ...", returning an integer value.
@@ -93,6 +94,7 @@ if __name__ == "__main__":
     threshold = checkArg("<threshold>", lambda v: key is not None or v > 0)
 
     closed = argv["--closed"]
+    generator = argv["--generator"]
 
     filter = checkFunc("--filter") if argv["--filter"] else None
 
@@ -106,7 +108,7 @@ if __name__ == "__main__":
         invwordmap = {i: w for w, i in wordmap.items()}
 
     for freq, patt in func(
-            threshold, closed=closed,
+            threshold, closed=closed, generator=generator,
             key=key, bound=bound,
             filter=filter
         ):

@@ -3,7 +3,10 @@
 from typing import *
 
 DB = List[List[int]]
+
 Matches = List[Tuple[int, int]]
+Occurs = Dict[int, Matches]
+
 Pattern = List[int]
 Results = List[Tuple[int, Pattern]]
 

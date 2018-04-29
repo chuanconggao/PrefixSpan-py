@@ -6,14 +6,19 @@ from heapq import heappush, heappushpop
 
 from .prefixspan import PrefixSpan
 from .scan import scan
-from .closed import isclosed, canprune
+
+from .closed import isclosed, canclosedprune
+from .generator import isgenerator, cangeneratorprune
 
 def PrefixSpan_topk(
-        self, k, closed=False,
+        self, k, closed=False, generator=False,
         key=None, bound=None,
         filter=None
     ):
-    # type: (PrefixSpan, int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+    # type: (PrefixSpan, int, bool, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+    if generator:
+        occursstack = [] # type: List[Occurs]
+
     def canpass(sup):
         # type: (int) -> bool
         return len(self._results) == k and sup <= self._results[0][0]
@@ -25,7 +30,10 @@ def PrefixSpan_topk(
         if canpass(sup):
             return
 
-        if (not closed or isclosed(self._db, patt, matches)) and (filter is None or filter(patt, matches)):
+        if (filter is None or filter(patt, matches)) and (
+                (not closed or isclosed(self._db, patt, matches)) and
+                (not generator or isgenerator(self._db, patt, matches, occursstack))
+            ):
             (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt))
 
 
@@ -37,8 +45,12 @@ def PrefixSpan_topk(
             if len(patt) == self.maxlen:
                 return
 
+        occurs = scan(self._db, matches)
+        if generator:
+            occursstack.append(occurs)
+
         for newitem, newmatches in sorted(
-                scan(self._db, matches).items(),
+                occurs.items(),
                 key=lambda x: key(patt + [x[0]], x[1]),
                 reverse=True
             ):
@@ -46,10 +58,17 @@ def PrefixSpan_topk(
 
             if canpass(bound(newpatt, newmatches)):
                 break
-            if closed and canprune(self._db, newpatt, newmatches):
+
+            if (
+                    closed and canclosedprune(self._db, newpatt, newmatches) or
+                    generator and cangeneratorprune(self._db, newpatt, newmatches, occursstack)
+                ):
                 continue
 
             topk_rec(newpatt, newmatches)
+
+        if generator:
+            occursstack.pop()
 
 
     if key is None:

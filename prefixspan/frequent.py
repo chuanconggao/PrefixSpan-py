@@ -4,14 +4,19 @@ from .localtyping import *
 
 from .prefixspan import PrefixSpan
 from .scan import scan
-from .closed import isclosed, canprune
+
+from .closed import isclosed, canclosedprune
+from .generator import isgenerator, cangeneratorprune
 
 def PrefixSpan_frequent(
-        self, minsup, closed=False,
+        self, minsup, closed=False, generator=False,
         key=None, bound=None,
         filter=None
     ):
-    # type: (PrefixSpan, int, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+    # type: (PrefixSpan, int, bool, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+    if generator:
+        occursstack = [] # type: List[Occurs]
+
     def canpass(sup):
         # type: (int) -> bool
         return sup < minsup
@@ -23,7 +28,10 @@ def PrefixSpan_frequent(
         if canpass(sup):
             return
 
-        if (not closed or isclosed(self._db, patt, matches)) and (filter is None or filter(patt, matches)):
+        if (filter is None or filter(patt, matches)) and (
+                (not closed or isclosed(self._db, patt, matches)) and
+                (not generator or isgenerator(self._db, patt, matches, occursstack))
+            ):
             self._results.append((sup, patt))
 
 
@@ -35,12 +43,22 @@ def PrefixSpan_frequent(
             if len(patt) == self.maxlen:
                 return
 
-        for newitem, newmatches in scan(self._db, matches).items():
+        occurs = scan(self._db, matches)
+        if generator:
+            occursstack.append(occurs)
+
+        for newitem, newmatches in occurs.items():
             newpatt = patt + [newitem]
-            if canpass(bound(newpatt, newmatches)) or closed and canprune(self._db, newpatt, newmatches):
+            if canpass(bound(newpatt, newmatches)) or (
+                    closed and canclosedprune(self._db, newpatt, newmatches) or
+                    generator and cangeneratorprune(self._db, newpatt, newmatches, occursstack)
+                ):
                 continue
 
             frequent_rec(newpatt, newmatches)
+
+        if generator:
+            occursstack.pop()
 
 
     if key is None:

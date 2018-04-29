@@ -3,7 +3,7 @@
 from setuptools import setup
 
 url = "https://github.com/chuanconggao/PrefixSpan-py"
-version = "0.4"
+version = "0.5"
 
 setup(
     name="prefixspan",
@@ -21,7 +21,7 @@ setup(
     author="Chuancong Gao",
     author_email="chuancong@gmail.com",
 
-    description="PrefixSpan and BIDE in Python 3",
+    description="PrefixSpan, BIDE, and FEAT in Python 3",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
 

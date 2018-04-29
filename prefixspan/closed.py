@@ -39,7 +39,7 @@ def isclosed(db, patt, matches):
     )
 
 
-def canprune(db, patt, matches):
+def canclosedprune(db, patt, matches):
     # type: (DB, Pattern, Matches) -> bool
     # Add a pseduo item indicating the start of sequence
     return __reversescan(db, [None, *patt], matches[:])

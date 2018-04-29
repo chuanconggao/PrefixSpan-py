@@ -8,9 +8,11 @@ The shortest yet efficient implementation of famous frequent sequential pattern 
 
 Also includes the implementation of famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986), which extends the framework of PrefixSpan algorithm (in `closed.py`).
 
-- A pattern is closed if there is no super-pattern with the same frequency.
-
 - BIDE is usually much faster than PrefixSpan on large datasets, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
+
+Also includes the implementation of frequent **generator** sequential pattern mining algorithm [FEAT](https://dl.acm.org/citation.cfm?doid=1367497.1367651), which extends the framework of PrefixSpan algorithm (in `generator.py`).
+
+- FEAT is usually faster than PrefixSpan but slower than BIDE on large datasets.
 
 # Features
 
@@ -41,6 +43,7 @@ Options:
     --text             Treat each item as text instead of integer.
 
     --closed           Return only closed patterns.
+    --generator        Return only generator patterns.
 
     --key=<key>        Custom key function. [default: ]
                        Must be a Python function in form of "lambda patt, matches: ...", returning an integer value.
@@ -117,30 +120,6 @@ d e : 2
 e : 2
 ```
 
-* As you can see, the closed patterns are much more compact.
-
-``` text
-prefixspan-cli frequent 2 --closed test.dat
-
-0 : 2
-1 : 4
-1 2 : 3
-1 2 2 : 2
-1 3 4 : 2
-1 1 1 : 2
-```
-
-``` text
-prefixspan-cli frequent 2 --text --closed test.txt
-
-a : 2
-b : 4
-b c : 3
-b c c : 2
-b d e : 2
-b b b : 2
-```
-
 # API Usage
 
 Alternatively, you can use the algorithms via API.
@@ -186,19 +165,55 @@ print(ps.topk(5))
 
 
 print(ps.frequent(2, closed=True))
-# [(2, [0]),
-#  (4, [1]),
-#  (3, [1, 2]),
-#  (2, [1, 2, 2]),
-#  (2, [1, 3, 4]),
-#  (2, [1, 1, 1])]
 
 print(ps.topk(5, closed=True))
-# [(4, [1]),
-#  (3, [1, 2]),
-#  (2, [1, 1, 1]),
-#  (2, [1, 2, 2]),
-#  (2, [1, 3, 4])]
+
+
+print(ps.frequent(2, generator=True))
+
+print(ps.topk(5, generator=True))
+```
+
+# Closed Patterns and Generator Patterns
+
+The closed patterns are much more compact due to the smaller number.
+
+- A pattern is closed if there is no super-pattern with the same frequency.
+
+``` text
+prefixspan-cli frequent 2 --closed test.dat
+
+0 : 2
+1 : 4
+1 2 : 3
+1 2 2 : 2
+1 3 4 : 2
+1 1 1 : 2
+```
+
+The generator patterns are even more compact due to both the smaller number and the shorter lengths.
+
+- A pattern is generator if there is no sub-pattern with the same frequency.
+
+- Due to the high compactness, generator patterns are useful as features for classification, etc.
+
+``` text
+prefixspan-cli frequent 2 --generator test.dat
+
+0 : 2
+1 1 : 2
+2 : 3
+2 2 : 2
+3 : 2
+4 : 2
+```
+
+There are patterns that are both closed and generator.
+
+``` text
+prefixspan-cli frequent 2 --closed --generator test.dat
+
+0 : 2
 ```
 
 # Custom Key Function

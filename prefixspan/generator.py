@@ -2,7 +2,8 @@
 
 from .localtyping import *
 
-from .aux import sorteddiff, issubseq
+from extratools.seqtools import issubseqwithgap
+from extratools.sortedtools import sorteddiff
 
 def isgenerator(db, patt, matches, occursstack):
     # type: (DB, Pattern, Matches, List[Occurs]) -> bool
@@ -20,7 +21,7 @@ def isgenerator(db, patt, matches, occursstack):
         # occursstack[0] is for patt == []
         prevoccurs, occurs = occursstack[i - 1][item], occursstack[i][item]
         if len(prevoccurs) == len(occurs) or all(
-                not issubseq(patt[i + 1:], db[k][pos + 1:])
+                not issubseqwithgap(patt[i + 1:], db[k][pos + 1:])
                 for k, pos in sorteddiff(prevoccurs, occurs, key=lambda x: x[0])
             ):
             return False

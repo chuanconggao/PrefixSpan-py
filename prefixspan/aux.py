@@ -4,7 +4,7 @@ from typing import *
 
 T = TypeVar('T')
 
-def sorteddiff(a: Iterable[T], b: Iterable[T], key=lambda v: v) -> Iterable[T]:
+def sorteddiff(a: Iterable[T], b: Iterable[T], key: Callable[[T], Any] = lambda v: v) -> Iterable[T]:
     # Assume a and b are sorted, where set(a) >= set(b)
     # Output equals to sorted(set(a) - set(b))
 

@@ -13,7 +13,7 @@ def PrefixSpan_frequent(
         key=None, bound=None,
         filter=None
     ):
-    # type: (PrefixSpan, int, bool, bool, Union[None, Key], Union[None, Key], Union[None, Filter]) -> Results
+    # type: (PrefixSpan, int, bool, bool, Optional[Key], Optional[Key], Optional[Filter]) -> Results
     if generator:
         occursstack = [] # type: List[Occurs]
 

@@ -3,9 +3,9 @@
 from .localtyping import *
 
 def __reversescan(db, patt, matches):
-    # type: (DB, List[Union[int, None]], Matches) -> bool
+    # type: (DB, List[Optional[int]], Matches) -> bool
     def islocalclosed(previtem):
-        # type: (Union[int, None]) -> bool
+        # type: (Optional[int]) -> bool
         closeditems = set() # type: Set[int]
 
         for k, (i, endpos) in enumerate(matches):

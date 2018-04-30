@@ -34,6 +34,7 @@ from functools import partial
 from docopt import docopt
 
 from prefixspan import PrefixSpan
+from extratools.dicttools import invertdict, remap
 
 print2 = partial(print, file=sys.stderr)
 
@@ -74,10 +75,7 @@ if __name__ == "__main__":
     if istext:
         wordmap = {} # type: Dict[str, int]
 
-        db = [
-            [wordmap.setdefault(w, len(wordmap)) for w in doc]
-            for doc in docs
-        ]
+        db = [list(remap(doc, wordmap)) for doc in docs]
     else:
         db = [
             [int(w) for w in doc]
@@ -105,7 +103,7 @@ if __name__ == "__main__":
 
 
     if istext:
-        invwordmap = {i: w for w, i in wordmap.items()}
+        invwordmap = invertdict(wordmap)
 
     for freq, patt in func(
             threshold, closed=closed, generator=generator,

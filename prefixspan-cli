@@ -29,14 +29,12 @@ Options:
 from typing import *
 
 import sys
-from functools import partial
 
 from docopt import docopt
 
 from prefixspan import PrefixSpan
 from extratools.dicttools import invertdict, remap
-
-print2 = partial(print, file=sys.stderr)
+from extratools.printtools import print2
 
 def checkArg(arg, cond):
     # type: (str, Callable[[int], bool]) -> int

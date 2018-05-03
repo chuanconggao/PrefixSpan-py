@@ -2,9 +2,9 @@
 
 from .localtyping import *
 
-from .prefixspan import PrefixSpan
-from .scan import scan
+from extratools.seqtools import nextentries
 
+from .prefixspan import PrefixSpan
 from .closed import isclosed, canclosedprune
 from .generator import isgenerator, cangeneratorprune
 
@@ -43,7 +43,7 @@ def PrefixSpan_frequent(
             if len(patt) == self.maxlen:
                 return
 
-        occurs = scan(self._db, matches)
+        occurs = nextentries(self._db, matches)
         if generator:
             occursstack.append(occurs)
 

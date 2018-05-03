@@ -1,18 +1,16 @@
-[![PyPi version](https://img.shields.io/pypi/v/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
-[![PyPi pyversions](https://img.shields.io/pypi/pyversions/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
-[![PyPi license](https://img.shields.io/pypi/l/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
+[![PyPI version](https://img.shields.io/pypi/v/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
+[![PyPI license](https://img.shields.io/pypi/l/prefixspan.svg)](https://pypi.python.org/pypi/prefixspan/)
 
-The shortest yet efficient implementation of famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/) in Python 3, with less than 20 lines in core part (scan in `scan.py` and extend in `frequent.py`).
+The shortest yet efficient implementation of the famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/), the famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986) (in `closed.py`), and the frequent **generator** sequential pattern mining algorithm [FEAT](https://dl.acm.org/citation.cfm?doid=1367497.1367651) (in `generator.py`), as a unified and holistic algorithm framework.
 
-- You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala).
-
-Also includes the implementation of famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986), which extends the framework of PrefixSpan algorithm (in `closed.py`).
+- For simpler code, some general purpose functions have been moved to be part of a new library [extratools](https://github.com/chuanconggao/extratools).
 
 - BIDE is usually much faster than PrefixSpan on large datasets, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
 
-Also includes the implementation of frequent **generator** sequential pattern mining algorithm [FEAT](https://dl.acm.org/citation.cfm?doid=1367497.1367651), which extends the framework of PrefixSpan algorithm (in `generator.py`).
-
 - FEAT is usually faster than PrefixSpan but slower than BIDE on large datasets.
+
+You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala) of PrefixSpan.
 
 # Features
 
@@ -26,7 +24,7 @@ Outputs traditional single-item sequential patterns, where gaps are allowed betw
 
 # Installation
 
-This package is available on PyPi. Just use `pip3 install -U prefixspan` to install it.
+This package is available on PyPI. Just use `pip3 install -U prefixspan` to install it.
 
 # CLI Usage
 

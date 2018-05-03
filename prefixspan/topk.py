@@ -4,9 +4,9 @@ from .localtyping import *
 
 from heapq import heappush, heappushpop
 
-from .prefixspan import PrefixSpan
-from .scan import scan
+from extratools.seqtools import nextentries
 
+from .prefixspan import PrefixSpan
 from .closed import isclosed, canclosedprune
 from .generator import isgenerator, cangeneratorprune
 
@@ -45,7 +45,7 @@ def PrefixSpan_topk(
             if len(patt) == self.maxlen:
                 return
 
-        occurs = scan(self._db, matches)
+        occurs = nextentries(self._db, matches)
         if generator:
             occursstack.append(occurs)
 

@@ -10,6 +10,8 @@ The shortest yet efficient implementation of the famous frequent sequential patt
 
 - FEAT is usually faster than PrefixSpan but slower than BIDE on large datasets.
 
+I created this project with the [original](https://github.com/chuanconggao/PrefixSpan-py/commit/441b04eca2174b3c92f6b6b2f50a30f1ffe4968c) minimal 15 lines implementation of PrefixSpan for educational purpose. However, as this project grows into a full feature library, its code size also inevitably grows. I have revised and reuploaded the original implementation as a GitHub Gist [here](https://gist.github.com/chuanconggao/4df9c1b06fa7f3ed854d5d96e2ae499f) for reference.
+
 You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala) of PrefixSpan.
 
 # Features

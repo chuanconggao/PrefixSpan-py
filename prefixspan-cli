@@ -33,7 +33,7 @@ import sys
 from docopt import docopt
 
 from prefixspan import PrefixSpan
-from extratools.dicttools import invertdict, remap
+from extratools.dicttools import invert, remap
 from extratools.printtools import print2
 
 def checkArg(arg, cond):
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
 
     if istext:
-        invwordmap = invertdict(wordmap)
+        invwordmap = invert(wordmap)
 
     for freq, patt in func(
             threshold, closed=closed, generator=generator,

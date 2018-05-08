@@ -10,11 +10,35 @@ The shortest yet efficient implementation of the famous frequent sequential patt
 
 - FEAT is usually faster than PrefixSpan but slower than BIDE on large datasets.
 
+## Reference
+
+### Research Papers
+
+``` text
+PrefixSpan: Mining Sequential Patterns by Prefix-Projected Growth.
+Jian Pei, Jiawei Han, Behzad Mortazavi-Asl, Helen Pinto, Qiming Chen, Umeshwar Dayal, Meichun Hsu.
+Proceedings of the 17th International Conference on Data Engineering, 2001.
+```
+
+``` text
+BIDE: Efficient Mining of Frequent Closed Sequences.
+Jianyong Wang, Jiawei Han.
+Proceedings of the 20th International Conference on Data Engineering, 2004.
+```
+
+``` text
+Efficient mining of frequent sequence generators.
+Chuancong Gao, Jianyong Wang, Yukai He, Lizhu Zhou.
+Proceedings of the 17th International Conference on World Wide Web, 2008.
+```
+
+### Other Implementations
+
 I created this project with the [original](https://github.com/chuanconggao/PrefixSpan-py/commit/441b04eca2174b3c92f6b6b2f50a30f1ffe4968c) minimal 15 lines implementation of PrefixSpan for educational purpose. However, as this project grows into a full feature library, its code size also inevitably grows. I have revised and reuploaded the original implementation as a GitHub Gist [here](https://gist.github.com/chuanconggao/4df9c1b06fa7f3ed854d5d96e2ae499f) for reference.
 
-You can also try the Scala [version](https://github.com/chuanconggao/PrefixSpan-scala) of PrefixSpan.
+You can also try my Scala [version](https://github.com/chuanconggao/PrefixSpan-scala) of PrefixSpan.
 
-# Features
+## Features
 
 Outputs traditional single-item sequential patterns, where gaps are allowed between items.
 
@@ -24,11 +48,11 @@ Outputs traditional single-item sequential patterns, where gaps are allowed betw
 
 - Custom key function and custom filter function can be applied.
 
-# Installation
+## Installation
 
 This package is available on PyPI. Just use `pip3 install -U prefixspan` to install it.
 
-# CLI Usage
+## CLI Usage
 
 You can simply use the algorithms on terminal.
 
@@ -120,7 +144,7 @@ d e : 2
 e : 2
 ```
 
-# API Usage
+## API Usage
 
 Alternatively, you can use the algorithms via API.
 
@@ -174,7 +198,7 @@ print(ps.frequent(2, generator=True))
 print(ps.topk(5, generator=True))
 ```
 
-# Closed Patterns and Generator Patterns
+## Closed Patterns and Generator Patterns
 
 The closed patterns are much more compact due to the smaller number.
 
@@ -216,7 +240,7 @@ prefixspan-cli frequent 2 --closed --generator test.dat
 0 : 2
 ```
 
-# Custom Key Function
+## Custom Key Function
 
 For both frequent and top-k algorithms, a custom key function `key=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
     
@@ -237,7 +261,7 @@ print(ps.topk(5, key=lambda patt, matches: sum(len(db[i]) for i, _ in matches)))
 #  (10, [1, 3, 4])]
 ```
 
-# Custom Filter Function
+## Custom Filter Function
 
 For both frequent and top-k algorithms, a custom filter function `filter=lambda patt, matches: ...` can be applied, where `patt` is the current pattern and `matches` is the current list of matching sequence `(id, position)` tuples.
 
@@ -254,6 +278,6 @@ print(ps.topk(5, filter=lambda patt, matches: matches[0][0] > 0))
 #  (1, [1, 2, 2, 0])]
 ```
 
-# Tip
+## Tip
 
 I strongly encourage using [PyPy](http://pypy.org/) instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average. To start, you can install this package in a [virtual environment](https://virtualenv.pypa.io/en/stable/) created for PyPy.

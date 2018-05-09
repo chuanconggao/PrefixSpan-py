@@ -9,11 +9,11 @@ class PrefixSpan(object):
 
         self.minlen, self.maxlen = 1, 1000
 
-        self._results = [] # type: Results
+        self._results = [] # type: Any
 
 
     def _mine(self, func):
-        # type: (Callable[[Pattern, Matches], None]) -> Results
+        # type: (Callable[[Pattern, Matches], None]) -> Any
         self._results.clear()
 
         func([], [(i, -1) for i in range(len(self._db))])

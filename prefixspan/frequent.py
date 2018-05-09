@@ -11,9 +11,9 @@ from .generator import isgenerator, cangeneratorprune
 def PrefixSpan_frequent(
         self, minsup, closed=False, generator=False,
         key=None, bound=None,
-        filter=None
+        filter=None, callback=None
     ):
-    # type: (PrefixSpan, int, bool, bool, Optional[Key], Optional[Key], Optional[Filter]) -> Results
+    # type: (PrefixSpan, int, bool, bool, Optional[Key], Optional[Key], Optional[Filter], Optional[Callback]) -> Results
     if generator:
         occursstack = [] # type: List[Occurs]
 
@@ -32,7 +32,10 @@ def PrefixSpan_frequent(
                 (not closed or isclosed(self._db, patt, matches)) and
                 (not generator or isgenerator(self._db, patt, matches, occursstack))
             ):
-            self._results.append((sup, patt))
+            if callback:
+                callback(patt, matches)
+            else:
+                self._results.append((sup, patt))
 
 
     def frequent_rec(patt, matches):
@@ -64,4 +67,6 @@ def PrefixSpan_frequent(
     if key is None:
         key = bound = PrefixSpan.defaultkey
 
-    return self._mine(frequent_rec)
+    results = self._mine(frequent_rec)
+
+    return None if callback else results

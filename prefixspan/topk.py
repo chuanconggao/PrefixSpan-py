@@ -13,9 +13,9 @@ from .generator import isgenerator, cangeneratorprune
 def PrefixSpan_topk(
         self, k, closed=False, generator=False,
         key=None, bound=None,
-        filter=None
+        filter=None, callback=None
     ):
-    # type: (PrefixSpan, int, bool, bool, Optional[Key], Optional[Key], Optional[Filter]) -> Results
+    # type: (PrefixSpan, int, bool, bool, Optional[Key], Optional[Key], Optional[Filter], Optional[Callback]) -> Results
     if generator:
         occursstack = [] # type: List[Occurs]
 
@@ -34,7 +34,7 @@ def PrefixSpan_topk(
                 (not closed or isclosed(self._db, patt, matches)) and
                 (not generator or isgenerator(self._db, patt, matches, occursstack))
             ):
-            (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt))
+            (heappush if len(self._results) < k else heappushpop)(self._results, (sup, patt, matches))
 
 
     def topk_rec(patt, matches):
@@ -75,4 +75,12 @@ def PrefixSpan_topk(
         key = bound = PrefixSpan.defaultkey
 
     # Sort by support in reverse, then by pattern.
-    return sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))
+    results = sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))
+
+    if callback:
+        for _, patt, matches in results:
+            callback(patt, matches)
+
+        return None
+
+    return [(sup, patt) for sup, patt, _ in results]

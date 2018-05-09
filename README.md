@@ -32,7 +32,7 @@ Chuancong Gao, Jianyong Wang, Yukai He, Lizhu Zhou.
 Proceedings of the 17th International Conference on World Wide Web, 2008.
 ```
 
-### Other Implementations
+### Alternative Implementations
 
 I created this project with the [original](https://github.com/chuanconggao/PrefixSpan-py/commit/441b04eca2174b3c92f6b6b2f50a30f1ffe4968c) minimal 15 lines implementation of PrefixSpan for educational purpose. However, as this project grows into a full feature library, its code size also inevitably grows. I have revised and reuploaded the original implementation as a GitHub Gist [here](https://gist.github.com/chuanconggao/4df9c1b06fa7f3ed854d5d96e2ae499f) for reference.
 
@@ -46,7 +46,7 @@ Outputs traditional single-item sequential patterns, where gaps are allowed betw
 
 - You can limit the length of mined patterns. Note that setting maximum pattern length properly can significantly speedup the algorithm.
 
-- Custom key function and custom filter function can be applied.
+- Custom key function, custom filter function, and custom callback function can be applied.
 
 ## Installation
 
@@ -276,6 +276,33 @@ print(ps.topk(5, filter=lambda patt, matches: matches[0][0] > 0))
 #  (2, [1, 2, 2]),
 #  (2, [2, 2]),
 #  (1, [1, 2, 2, 0])]
+```
+
+## Custom Callback Function
+
+For both the frequent and the top-k algorithm, you can use a custom callback function `filter=lambda patt, matches: ...` instead of returning the normal results of patterns and their respective frequencies.
+
+- When callback function is specified, `None` is returned.
+
+- For large datasets, when mining frequent patterns, you can use callback function to process each pattern immediately, and avoid having a huge list of patterns consuming huge amount of memory.
+
+- The follow example finds the longest frequent pattern covering each sequence.
+
+``` python
+coverage = [[] for i in range(len(db))]
+
+def cover(patt, matches):
+    for i, _ in matches:
+        coverage[i] = max(coverage[i], patt, key=len)
+
+
+ps.frequent(2, callback=cover)
+
+print(coverage)
+# [[1, 3, 4],
+#  [1, 3, 4],
+#  [1, 2, 2],
+#  [1, 2, 2]]
 ```
 
 ## Tip

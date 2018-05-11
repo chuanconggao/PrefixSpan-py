@@ -280,7 +280,7 @@ print(ps.topk(5, filter=lambda patt, matches: matches[0][0] > 0))
 
 ## Custom Callback Function
 
-For both the frequent and the top-k algorithm, you can use a custom callback function `filter=lambda patt, matches: ...` instead of returning the normal results of patterns and their respective frequencies.
+For both the frequent and the top-k algorithm, you can use a custom callback function `callback=lambda patt, matches: ...` instead of returning the normal results of patterns and their respective frequencies.
 
 - When callback function is specified, `None` is returned.
 

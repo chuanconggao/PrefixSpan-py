@@ -4,11 +4,11 @@
 
 The shortest yet efficient implementation of the famous frequent sequential pattern mining algorithm [PrefixSpan](https://ieeexplore.ieee.org/abstract/document/914830/), the famous frequent **closed** sequential pattern mining algorithm [BIDE](https://ieeexplore.ieee.org/abstract/document/1319986) (in `closed.py`), and the frequent **generator** sequential pattern mining algorithm [FEAT](https://dl.acm.org/citation.cfm?doid=1367497.1367651) (in `generator.py`), as a unified and holistic algorithm framework.
 
-- For simpler code, some general purpose functions have been moved to be part of a new library [extratools](https://github.com/chuanconggao/extratools).
-
 - BIDE is usually much faster than PrefixSpan on large datasets, as only a small subset of closed patterns sharing the equivalent information of all the patterns are returned.
 
 - FEAT is usually faster than PrefixSpan but slower than BIDE on large datasets.
+
+For simpler code, some general purpose functions have been moved to be part of a new library [extratools](https://github.com/chuanconggao/extratools).
 
 ## Reference
 
@@ -286,7 +286,7 @@ For both the frequent and the top-k algorithm, you can use a custom callback fun
 
 - For large datasets, when mining frequent patterns, you can use callback function to process each pattern immediately, and avoid having a huge list of patterns consuming huge amount of memory.
 
-- The follow example finds the longest frequent pattern covering each sequence.
+- The following example finds the longest frequent pattern covering each sequence.
 
 ``` python
 coverage = [[] for i in range(len(db))]

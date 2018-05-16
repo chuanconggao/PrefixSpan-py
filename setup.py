@@ -3,7 +3,7 @@
 from setuptools import setup
 
 url = "https://github.com/chuanconggao/PrefixSpan-py"
-version = "0.5.1"
+version = "0.5.1.1"
 
 setup(
     name="prefixspan",
@@ -15,7 +15,7 @@ setup(
     url=url,
 
     version=version,
-    download_url=f"{url}/tarball/{version}",
+    download_url="{}/tarball/{}".format(url, version),
 
     license="MIT",
 

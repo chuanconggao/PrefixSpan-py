@@ -2,7 +2,7 @@
 
 from .localtyping import *
 
-from extratools.seqtools import nextentries
+from extratools.dicttools import nextentries
 
 from .prefixspan import PrefixSpan
 from .closed import isclosed, canclosedprune

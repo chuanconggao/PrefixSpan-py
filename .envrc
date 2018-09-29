@@ -1,0 +1,1 @@
+. $(pipenv --venv)/bin/activate

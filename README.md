@@ -310,3 +310,5 @@ print(coverage)
 ## Tip
 
 I strongly encourage using [PyPy](http://pypy.org/) instead of CPython to run the script for best performance. In my own experience, it is nearly 10 times faster in average. To start, you can install this package in a [virtual environment](https://virtualenv.pypa.io/en/stable/) created for PyPy.
+
+Note that only the earlier version 0.4 works for the latest PyPy3 6.0.0 (compatible with Python 3.5.3). Please install it via `pip3 install prefixspan==0.4`. Latest version should work for the future PyPy3 (compatible with Python 3.6).

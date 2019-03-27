@@ -26,7 +26,7 @@ Options:
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
 """
 
-from typing import *
+from typing import Callable, Dict
 
 import sys
 
@@ -36,8 +36,8 @@ from prefixspan import PrefixSpan
 from extratools.dicttools import invert, remap
 from extratools.printtools import print2
 
-def checkArg(arg, cond):
-    # type: (str, Callable[[int], bool]) -> int
+
+def checkArg(arg: str, cond: Callable[[int], bool]) -> int:
     try:
         val = int(argv[arg])
         if not cond(val):
@@ -50,8 +50,7 @@ def checkArg(arg, cond):
     return val
 
 
-def checkFunc(arg):
-    # type: (str) -> Callable[..., bool]
+def checkFunc(arg: str) -> Callable[..., bool]:
     try:
         return eval(argv[arg])
     except:
@@ -71,7 +70,7 @@ if __name__ == "__main__":
     ]
 
     if istext:
-        wordmap = {} # type: Dict[str, int]
+        wordmap: Dict[str, int] = {}
 
         db = [list(remap(doc, wordmap)) for doc in docs]
     else:
@@ -99,15 +98,14 @@ if __name__ == "__main__":
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
 
-
     if istext:
         invwordmap = invert(wordmap)
 
     for freq, patt in func(
-            threshold, closed=closed, generator=generator,
-            key=key, bound=bound,
-            filter=filter
-        ):
+        threshold, closed=closed, generator=generator,
+        key=key, bound=bound,
+        filter=filter
+    ):
         print("{} : {}".format(' '.join(
             (invwordmap[i] for i in patt) if istext
             else (str(i) for i in patt)

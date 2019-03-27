@@ -1,12 +1,11 @@
 #! /usr/bin/env python3
 
-from .localtyping import *
+from .localtyping import Optional, Set, Matches, DB, Pattern, List
 
-def __reversescan(db, patt, matches):
-    # type: (DB, List[Optional[int]], Matches) -> bool
-    def islocalclosed(previtem):
-        # type: (Optional[int]) -> bool
-        closeditems = set() # type: Set[int]
+
+def __reversescan(db: DB, patt: List[Optional[int]], matches: Matches):
+    def islocalclosed(previtem: Optional[int]) -> bool:
+        closeditems: Set[int] = set()
 
         for k, (i, endpos) in enumerate(matches):
             localitems = set()
@@ -20,16 +19,15 @@ def __reversescan(db, patt, matches):
 
                 localitems.add(item)
 
-            (closeditems.update if k == 0 else closeditems.intersection_update)(localitems)
+            (closeditems.update if k ==
+             0 else closeditems.intersection_update)(localitems)
 
         return len(closeditems) > 0
-
 
     return any(islocalclosed(previtem) for previtem in reversed(patt[:-1]))
 
 
-def isclosed(db, patt, matches):
-    # type: (DB, Pattern, Matches) -> bool
+def isclosed(db: DB, patt: Pattern, matches: Matches) -> bool:
     # Add a pseduo item indicating the start of sequence
     # Add a pseduo item indicating the end of sequence
     return not __reversescan(
@@ -39,7 +37,6 @@ def isclosed(db, patt, matches):
     )
 
 
-def canclosedprune(db, patt, matches):
-    # type: (DB, Pattern, Matches) -> bool
+def canclosedprune(db: DB, patt: Pattern, matches: Matches) -> bool:
     # Add a pseduo item indicating the start of sequence
     return __reversescan(db, [None, *patt], matches[:])

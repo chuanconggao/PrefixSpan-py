@@ -19,8 +19,8 @@ def __reversescan(db: DB, patt: List[Optional[int]], matches: Matches):
 
                 localitems.add(item)
 
-            (closeditems.update if k ==
-             0 else closeditems.intersection_update)(localitems)
+            (closeditems.update if k == 0
+             else closeditems.intersection_update)(localitems)
 
         return len(closeditems) > 0
 

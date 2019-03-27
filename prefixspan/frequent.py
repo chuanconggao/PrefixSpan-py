@@ -20,7 +20,7 @@ def PrefixSpan_frequent(
     def canpass(sup: int) -> bool:
         return sup < minsup
 
-    def verify(patt: Pattern, matches: Matches) -> None:
+    def verify(patt: Pattern, matches: Matches):
         sup = key(patt, matches)
         if canpass(sup):
             return
@@ -35,7 +35,7 @@ def PrefixSpan_frequent(
             else:
                 self._results.append((sup, patt))
 
-    def frequent_rec(patt: Pattern, matches: Pattern) -> None:
+    def frequent_rec(patt: Pattern, matches: Pattern):
         if len(patt) >= self.minlen:
             verify(patt, matches)
 
@@ -48,11 +48,10 @@ def PrefixSpan_frequent(
 
         for newitem, newmatches in occurs.items():
             newpatt = patt + [newitem]
-            if canpass(bound(newpatt, newmatches)) or (
-                closed and canclosedprune(self._db, newpatt, newmatches) or
-                generator and cangeneratorprune(
-                    self._db, newpatt, newmatches, occursstack)
-            ):
+
+            if canpass(bound(newpatt, newmatches)) or\
+                (closed and canclosedprune(self._db, newpatt, newmatches)) or\
+                    (generator and cangeneratorprune(self._db, newpatt, newmatches, occursstack)):
                 continue
 
             frequent_rec(newpatt, newmatches)

@@ -28,6 +28,22 @@ def __reversescan(db, patt, matches):
     return any(islocalclosed(previtem) for previtem in reversed(patt[:-1]))
 
 
+def __forwardscan(db, matches):
+    # type: (DB, Matches) -> bool
+    closeditems = set() # type: Set[int]
+
+    for k, (i, endpos) in enumerate(matches):
+        localitems = set()
+
+        for startpos in range(endpos + 1, len(db[i])):
+            item = db[i][startpos]
+            localitems.add(item)
+
+        (closeditems.update if k == 0 else closeditems.intersection_update)(localitems)
+
+    return len(closeditems) > 0
+
+
 def isclosed(db, patt, matches):
     # type: (DB, Pattern, Matches) -> bool
     # Add a pseduo item indicating the start of sequence
@@ -36,7 +52,7 @@ def isclosed(db, patt, matches):
         db,
         [None, *patt, None],
         [(i, len(db[i])) for i, _ in matches]
-    )
+    ) and not __forwardscan(db, matches)
 
 
 def canclosedprune(db, patt, matches):

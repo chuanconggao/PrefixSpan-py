@@ -72,7 +72,15 @@ if __name__ == "__main__":
     if istext:
         wordmap: Dict[str, int] = {}
 
-        db = [list(remap(doc, wordmap)) for doc in docs]
+        for doc in docs:
+            for word in doc:
+                if not word in wordmap:
+                    wordmap[word] = len(wordmap)
+        db = [
+            [wordmap[w] for w in doc]
+            for doc in docs
+        ]
+        
     else:
         db = [
             [int(w) for w in doc]

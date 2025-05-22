@@ -161,6 +161,10 @@ db = [
 ]
 
 ps = PrefixSpan(db)
+
+ps.minlen = 5 #setting minimum length of the generated sequence 
+ps.maxlen = 15 #setting maximum length of the generated sequence
+
 ```
 
 For details of each parameter, please refer to the `PrefixSpan` class in `prefixspan/api.py`.

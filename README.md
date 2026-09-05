@@ -42,7 +42,7 @@ You can also try my Scala [version](https://github.com/chuanconggao/PrefixSpan-s
 
 ## Features
 
-Outputs traditional single-item sequential patterns, where gaps are allowed between items.
+Outputs traditional single-item sequential patterns. Gaps are unrestricted by default and can be bounded with `max_gap`.
 
 - Mining top-k patterns is supported, with respective optimizations on efficiency.
 
@@ -82,6 +82,7 @@ Options:
 
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
+    --max-gap=<gap>    Maximum skipped items between pattern items. [default: ]
 ```
 
 * Sequences are read from standard input. Each sequence is integers separated by space, like this example:
@@ -164,8 +165,20 @@ ps = PrefixSpan(db)
 
 ps.minlen = 5 #setting minimum length of the generated sequence 
 ps.maxlen = 15 #setting maximum length of the generated sequence
+ps.max_gap = None #unrestricted gaps (the default)
 
 ```
+
+Set `max_gap` to a non-negative integer to constrain consecutive pattern
+items. `max_gap = 0` mines contiguous patterns, while `max_gap = 2` permits
+at most two skipped sequence items between each pair of pattern items. The
+constraint applies to both `frequent()` and `topk()`. Closed and generator
+mining are not supported together with a bounded gap.
+
+With a bounded gap, `matches` passed to custom keys, filters, and callbacks
+still contains one `(sequence id, position)` tuple per matching sequence. The
+position is the earliest valid endpoint; all valid endpoints are retained
+internally so later extensions are complete.
 
 For details of each parameter, please refer to the `PrefixSpan` class in `prefixspan/api.py`.
 

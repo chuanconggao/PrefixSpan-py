@@ -4,9 +4,8 @@ from .localtyping import Pattern, Matches, Optional, Key, Filter, Callback, Resu
 
 from heapq import heappush, heappushpop
 
-from extratools.dicttools import nextentries
-
 from .prefixspan import PrefixSpan
+from .projection import nextentries
 from .closed import isclosed, canclosedprune
 from .generator import isgenerator, cangeneratorprune
 
@@ -16,6 +15,8 @@ def PrefixSpan_topk(
     key: Optional[Key] = None, bound: Optional[Key] = None,
     filter: Optional[Filter] = None, callback: Optional[Callback] = None
 ) -> Results:
+    self._validate_gap_options(closed, generator)
+
     if generator:
         occursstack: List[Occurs] = []
 
@@ -42,7 +43,7 @@ def PrefixSpan_topk(
             if len(patt) == self.maxlen:
                 return
 
-        occurs = nextentries(self._db, matches)
+        occurs = nextentries(self._db, matches, self.max_gap)
         if generator:
             occursstack.append(occurs)
 
@@ -69,7 +70,9 @@ def PrefixSpan_topk(
             occursstack.pop()
 
     if key is None:
-        key = bound = PrefixSpan.defaultkey
+        key = PrefixSpan.defaultkey
+    if bound is None:
+        bound = key
 
     # Sort by support in reverse, then by pattern.
     results = sorted(self._mine(topk_rec), key=lambda x: (-x[0], x[1]))

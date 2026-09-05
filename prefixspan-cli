@@ -24,6 +24,7 @@ Options:
 
     --minlen=<minlen>  Minimum length of patterns. [default: 1]
     --maxlen=<maxlen>  Maximum length of patterns. [default: 1000]
+    --max-gap=<gap>    Maximum skipped items between pattern items. [default: ]
 """
 
 from typing import Callable, Dict
@@ -105,6 +106,8 @@ if __name__ == "__main__":
         ps.minlen = checkArg("--minlen", lambda v: v > 0)
     if argv["--maxlen"]:
         ps.maxlen = checkArg("--maxlen", lambda v: v >= ps.minlen)
+    if argv["--max-gap"]:
+        ps.max_gap = checkArg("--max-gap", lambda v: v >= 0)
 
     if istext:
         invwordmap = invert(wordmap)

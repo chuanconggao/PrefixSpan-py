@@ -2,9 +2,8 @@
 
 from .localtyping import Results, Optional, Key, Callback, Filter, Pattern, Matches, List, Occurs
 
-from extratools.dicttools import nextentries
-
 from .prefixspan import PrefixSpan
+from .projection import nextentries
 from .closed import isclosed, canclosedprune
 from .generator import isgenerator, cangeneratorprune
 
@@ -14,6 +13,8 @@ def PrefixSpan_frequent(
     key: Optional[Key] = None, bound: Optional[Key] = None,
     filter: Optional[Filter] = None, callback: Optional[Callback] = None
 ) -> Results:
+    self._validate_gap_options(closed, generator)
+
     if generator:
         occursstack: List[Occurs] = []
 
@@ -42,7 +43,7 @@ def PrefixSpan_frequent(
             if len(patt) == self.maxlen:
                 return
 
-        occurs = nextentries(self._db, matches)
+        occurs = nextentries(self._db, matches, self.max_gap)
         if generator:
             occursstack.append(occurs)
 
@@ -60,7 +61,9 @@ def PrefixSpan_frequent(
             occursstack.pop()
 
     if key is None:
-        key = bound = PrefixSpan.defaultkey
+        key = PrefixSpan.defaultkey
+    if bound is None:
+        bound = key
 
     results = self._mine(frequent_rec)
 
